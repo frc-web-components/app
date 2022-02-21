@@ -58,7 +58,7 @@ class NetworkTables {
       if (typeof valueFromEntry !== 'undefined') {
         listener(key, valueFromEntry);
       }
-    }, EntryListenerFlags.UPDATE | EntryListenerFlags.NEW, EntryListenerFlags.IMMEDIATE);
+    }, EntryListenerFlags.UPDATE | EntryListenerFlags.NEW | EntryListenerFlags.IMMEDIATE | EntryListenerFlags.LOCAL);
   }
 
   _setEntryFromType(entry, value, type) {

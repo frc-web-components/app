@@ -7,13 +7,12 @@
 
 import { renderDashboard } from './node_modules/@frc-web-components/components/dist/components.es.js';
 import NetworkTables from './networktables/networktables.js';
-import './networktables/provider.js';
+import NetworkTablesProvider  from './networktables/provider.js';
 
-
-NetworkTables.addGlobalListener((key, value) => {
-  console.log('entry:', key, value)
-});
+window.NT = NetworkTables;
 
 document.addEventListener('DOMContentLoaded', () => {
-  renderDashboard(document.querySelector('#dash'));
+  const provider = new NetworkTablesProvider();
+  renderDashboard(document.querySelector('#dash'), provider);
+  
 });
