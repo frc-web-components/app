@@ -5,21 +5,13 @@
 // selectively enable features needed in the rendering
 // process.
 
-const { NetworkTableInstance, EntryListenerFlags } = require('node-ntcore');
 import { renderDashboard } from './node_modules/@frc-web-components/components/dist/components.es.js';
+import NetworkTables from './networktables/networktables.js';
 
-const nt = NetworkTableInstance.getDefault();
-nt.startClient('127.0.0.1');
-nt.addEntryListener('', (key, entry, value) => {
-  console.log('raw value:', value.isBoolean())
-  console.log('listener:', key, entry, value);
-  if (key === '/SmartDashboard/Field/traj') {
-    console.log('raw:', value.getRaw() instanceof Uint8Array)
-  }
-}, EntryListenerFlags.UPDATE | EntryListenerFlags.NEW, EntryListenerFlags.IMMEDIATE);
-
+NetworkTables.addGlobalListener((key, value) => {
+  console.log('entry:', key, value)
+});
 
 document.addEventListener('DOMContentLoaded', () => {
   renderDashboard(document.querySelector('#dash'));
-  window.ntTables = nt;
 });
