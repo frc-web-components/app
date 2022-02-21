@@ -1,0 +1,22 @@
+{
+  "name": "@frc-web-components/components",
+  "version": "1.0.0",
+  "description": "Electron app for FRC Web Components dashboard",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/frc-web-components/app.git"
+  },
+  "author": "Amory Galili",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/frc-web-components/app/issues"
+  },
+  "homepage": "https://github.com/frc-web-components/app#readme",
+  "devDependencies": {
+    "electron": "^17.0.1"
+  }
+}
