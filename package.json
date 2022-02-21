@@ -18,5 +18,8 @@
   "homepage": "https://github.com/frc-web-components/app#readme",
   "devDependencies": {
     "electron": "^17.0.1"
+  },
+  "dependencies": {
+    "@frc-web-components/components": "^2.0.0"
   }
 }
