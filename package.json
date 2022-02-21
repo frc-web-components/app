@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@frc-web-components/components": "^2.0.0",
+    "@webbitjs/store": "^3.1.0",
     "node-ntcore": "^0.1.6"
   }
 }

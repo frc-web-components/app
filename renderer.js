@@ -7,6 +7,8 @@
 
 import { renderDashboard } from './node_modules/@frc-web-components/components/dist/components.es.js';
 import NetworkTables from './networktables/networktables.js';
+import './networktables/provider.js';
+
 
 NetworkTables.addGlobalListener((key, value) => {
   console.log('entry:', key, value)
