@@ -18,10 +18,10 @@ class NetworkTables {
 
   constructor() {
     this._ntInstance = NetworkTableInstance.getDefault();
-    this.connect();
   }
 
   connect(address = '127.0.0.1', port) {
+    this._ntInstance.setServer(address, port)
     this._ntInstance.startClient(address, port);
   }
 
@@ -59,6 +59,12 @@ class NetworkTables {
         listener(key, valueFromEntry);
       }
     }, EntryListenerFlags.UPDATE | EntryListenerFlags.NEW | EntryListenerFlags.IMMEDIATE | EntryListenerFlags.LOCAL);
+  }
+
+  addDeletionListener(listener) {
+    this._ntInstance.addEntryListener('', key => {
+      listener(key);
+    }, EntryListenerFlags.DELETE);
   }
 
   _setEntryFromType(entry, value, type) {

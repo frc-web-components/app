@@ -11,6 +11,10 @@ import NetworkTablesProvider  from './networktables/provider.js';
 
 window.NT = NetworkTables;
 
+NetworkTables.addDeletionListener(key => {
+  console.log('entry deleted:', key);
+});
+
 document.addEventListener('DOMContentLoaded', () => {
   const provider = new NetworkTablesProvider();
   renderDashboard(document.querySelector('#dash'), provider);
