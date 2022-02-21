@@ -5,7 +5,7 @@
 // selectively enable features needed in the rendering
 // process.
 
-import { renderDashboard } from './node_modules/@frc-web-components/components/dist/components.es.js';
+import { renderDashboard } from '../node_modules/@frc-web-components/components/dist/components.es.js';
 import NetworkTables from './networktables/networktables.js';
 import NetworkTablesProvider  from './networktables/provider.js';
 
