@@ -1,5 +1,6 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, Menu } = require('electron');
 const path = require('path');
+// const { openModal } = require('./modals/modal.js');
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -25,6 +26,28 @@ const createWindow = () => {
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools();
+    const oldMenu = Menu.getApplicationMenu();
+    const menu = Menu.buildFromTemplate([
+      {
+          label: 'File',
+          submenu: [
+              {
+                label: 'Preferences',
+                click() {
+                  mainWindow.webContents.send('ntModalOpen');
+                }
+              },
+              { 
+                label: 'Exit',
+                click() { 
+                  app.quit();
+                } 
+              }
+          ]
+      },
+      ...oldMenu.items.slice(1)
+  ])
+  Menu.setApplicationMenu(menu); 
 };
 
 // This method will be called when Electron has finished

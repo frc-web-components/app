@@ -21,7 +21,7 @@ class NetworkTables {
   }
 
   connect(address = '127.0.0.1', port) {
-    this._ntInstance.setServer(address, port)
+    this._ntInstance.setServer(address === 'localhost' ? '127.0.0.1' : address, port)
     this._ntInstance.startClient(address, port);
   }
 

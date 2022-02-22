@@ -9,6 +9,7 @@ import { renderDashboard } from '../node_modules/@frc-web-components/components/
 import NetworkTables from './networktables/networktables.js';
 import NetworkTablesProvider  from './networktables/provider.js';
 import { openModal } from './modals/modal.js';
+const { ipcRenderer } = require('electron');
 
 window.NT = NetworkTables;
 
@@ -20,5 +21,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const provider = new NetworkTablesProvider();
   renderDashboard(document.querySelector('#dash'), provider);
   document.querySelector('#loading')?.remove();
-  // openModal('networktables-preferences');
+});
+
+ipcRenderer.on('ntModalOpen', () => {
+  openModal();
 });

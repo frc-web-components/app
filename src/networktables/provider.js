@@ -1,24 +1,19 @@
 import NetworkTables from './networktables.js';
 const { SourceProvider } = require('@webbitjs/store');
+import preferences from '../preferences.js';
 
 export default class NetworkTablesProvider extends SourceProvider {
 
   constructor() {
     super();
-    this.connect('localhost');
+    NetworkTables.connect(preferences.ntAddress);
     NetworkTables.addGlobalListener((key, value) => {
       this.updateSource(key, value);
     }, true);
-  }
 
-  connect(address) {
-    if (address) {
-      localStorage.networkTablesAddress = address === 'localhost' ? '127.0.0.1' : address;
-    }
-
-    if (localStorage.networkTablesAddress) {
-      NetworkTables.connect(localStorage.networkTablesAddress);
-    }
+    preferences.onNtChange(() => {
+      NetworkTables.connect(preferences.ntAddress)
+    });
   }
 
   userUpdate(key, value) {
