@@ -71,8 +71,11 @@
   },
   "dependencies": {
     "@frc-web-components/components": "^2.0.1",
+    "@vaadin/vaadin": "^17.0.7",
     "@webbitjs/store": "^3.1.0",
     "electron-squirrel-startup": "^1.0.0",
+    "electron-store": "^8.0.1",
+    "lit": "^2.0.0-rc.2",
     "node-ntcore": "^0.1.6"
   }
 }

@@ -8,6 +8,7 @@
 import { renderDashboard } from '../node_modules/@frc-web-components/components/dist/components.es.js';
 import NetworkTables from './networktables/networktables.js';
 import NetworkTablesProvider  from './networktables/provider.js';
+import { openModal } from './modals/modal.js';
 
 window.NT = NetworkTables;
 
@@ -18,5 +19,6 @@ NetworkTables.addDeletionListener(key => {
 document.addEventListener('DOMContentLoaded', () => {
   const provider = new NetworkTablesProvider();
   renderDashboard(document.querySelector('#dash'), provider);
-  
+  document.querySelector('#loading')?.remove();
+  // openModal('networktables-preferences');
 });
