@@ -10,6 +10,7 @@ import NetworkTables from './networktables/networktables.js';
 import NetworkTablesProvider  from './networktables/provider.js';
 import { openModal } from './modals/modal.js';
 const { ipcRenderer } = require('electron');
+const fs = require("fs");
 
 window.NT = NetworkTables;
 
@@ -19,14 +20,22 @@ NetworkTables.addDeletionListener(key => {
 
 document.addEventListener('DOMContentLoaded', () => {
   const provider = new NetworkTablesProvider();
-  renderDashboard(document.querySelector('#dash'), provider);
+  const api = renderDashboard(document.querySelector('#dash'), provider);
   document.querySelector('#loading')?.remove();
-});
 
-ipcRenderer.on('ntModalOpen', () => {
-  openModal();
-});
-
-ipcRenderer.on('dashboardOpen', (ev, filePaths) => {
-  console.log('file paths:', filePaths);
+  ipcRenderer.on('ntModalOpen', () => {
+    openModal();
+  });
+  
+  ipcRenderer.on('dashboardOpen', (ev, filePaths) => {
+    const [dashboardPath] = filePaths;
+    fs.readFile(dashboardPath, (error, buffer) => {
+      if (!error) {
+        const fileContent = buffer.toString();
+        api.setHtml(fileContent);
+      } else {
+        console.error(error);
+      }
+    });
+  });
 });
