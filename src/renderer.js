@@ -26,3 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
 ipcRenderer.on('ntModalOpen', () => {
   openModal();
 });
+
+ipcRenderer.on('dashboardOpen', (ev, filePaths) => {
+  console.log('file paths:', filePaths);
+});

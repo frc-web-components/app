@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Menu } = require('electron');
+const { app, BrowserWindow, Menu, dialog } = require('electron');
 const path = require('path');
 // const { openModal } = require('./modals/modal.js');
 
@@ -40,7 +40,16 @@ const createWindow = () => {
               {
                 label: 'Open Dashboard...',
                 click() {
-                  
+                  dialog.showOpenDialog(mainWindow, { 
+                    title: 'Open Dashboard',
+                    filters: [{ name: 'HTML', extensions: ['html', 'htm'] }],
+                    properties: ['openFile'] 
+                  })
+                    .then(({ canceled, filePaths }) => {
+                      if (!canceled) {
+                        mainWindow.webContents.send('dashboardOpen', filePaths);
+                      }
+                    });
                 }
               },
               {
