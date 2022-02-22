@@ -32,6 +32,30 @@ const createWindow = () => {
           label: 'File',
           submenu: [
               {
+                label: 'New Dashboard',
+                click() {
+
+                }
+              },
+              {
+                label: 'Open Dashboard...',
+                click() {
+                  
+                }
+              },
+              {
+                label: 'Save Dashboard',
+                click() {
+                  
+                }
+              },
+              {
+                label: 'Save Dashboard As...',
+                click() {
+                  
+                }
+              },
+              {
                 label: 'Preferences',
                 click() {
                   mainWindow.webContents.send('ntModalOpen');

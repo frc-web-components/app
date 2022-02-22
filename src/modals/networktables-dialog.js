@@ -62,7 +62,10 @@ export default class NetworkTablesDialog {
         serverInput.value = preferences.ntAddress;
         const confirmButton = div.querySelector('[part=confirm-button]');
         confirmButton.addEventListener('click', function() {
-          preferences.ntAddress = serverInput.value;
+          if (serverInput.value !== preferences.ntAddress) {
+            preferences.ntAddress = serverInput.value;
+          }
+          preferencesDialog.opened = false;
         });
         root.appendChild(div);
       }
