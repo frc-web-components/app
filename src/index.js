@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Menu, dialog } = require('electron');
+const { app, BrowserWindow, Menu, dialog, ipcMain } = require('electron');
 const path = require('path');
 // const { openModal } = require('./modals/modal.js');
 
@@ -26,59 +26,87 @@ const createWindow = () => {
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools();
-    const oldMenu = Menu.getApplicationMenu();
-    const menu = Menu.buildFromTemplate([
-      {
-          label: 'File',
-          submenu: [
-              {
-                label: 'New Dashboard',
-                click() {
 
-                }
-              },
-              {
-                label: 'Open Dashboard...',
-                click() {
-                  dialog.showOpenDialog(mainWindow, { 
-                    title: 'Open Dashboard',
+  let lastOpenedDashboard;
+
+  ipcMain.handle('lastOpenedDashboardChange', (ev, path) => {
+    lastOpenedDashboard = path;
+  });
+
+  const oldMenu = Menu.getApplicationMenu();
+  const menu = Menu.buildFromTemplate([
+    {
+        label: 'File',
+        submenu: [
+            {
+              label: 'New Dashboard',
+              click() {
+                mainWindow.webContents.send('newDashboard');
+              }
+            },
+            {
+              label: 'Open Dashboard...',
+              click() {
+                dialog.showOpenDialog(mainWindow, { 
+                  title: 'Open Dashboard',
+                  filters: [{ name: 'HTML', extensions: ['html', 'htm'] }],
+                  properties: ['openFile'] 
+                })
+                  .then(({ canceled, filePaths }) => {
+                    if (!canceled) {
+                      mainWindow.webContents.send('dashboardOpen', filePaths);
+                    }
+                  });
+              }
+            },
+            {
+              label: 'Save Dashboard',
+              click() {
+                if (lastOpenedDashboard) {
+                  mainWindow.webContents.send('dashboardSave', lastOpenedDashboard);
+                } else {
+                  dialog.showSaveDialog(mainWindow, { 
+                    title: 'Save Dashboard',
                     filters: [{ name: 'HTML', extensions: ['html', 'htm'] }],
-                    properties: ['openFile'] 
                   })
-                    .then(({ canceled, filePaths }) => {
+                    .then(({ canceled, filePath }) => {
                       if (!canceled) {
-                        mainWindow.webContents.send('dashboardOpen', filePaths);
+                        mainWindow.webContents.send('dashboardSave', filePath);
                       }
                     });
                 }
-              },
-              {
-                label: 'Save Dashboard',
-                click() {
-                  
-                }
-              },
-              {
-                label: 'Save Dashboard As...',
-                click() {
-                  
-                }
-              },
-              {
-                label: 'Preferences',
-                click() {
-                  mainWindow.webContents.send('ntModalOpen');
-                }
-              },
-              { 
-                label: 'Exit',
-                click() { 
-                  app.quit();
-                } 
               }
-          ]
-      },
-      ...oldMenu.items.slice(1)
+            },
+            {
+              label: 'Save Dashboard As...',
+              click() {
+                dialog.showSaveDialog(mainWindow, { 
+                  title: 'Save Dashboard',
+                  filters: [{ name: 'HTML', extensions: ['html', 'htm'] }],
+                  defaultPath: lastOpenedDashboard,
+                })
+                  .then(({ canceled, filePath }) => {
+                    if (!canceled) {
+                      mainWindow.webContents.send('dashboardSave', filePath);
+                    }
+                  });
+              }
+            },
+            {
+              label: 'Preferences',
+              click() {
+                mainWindow.webContents.send('ntModalOpen');
+              }
+            },
+            { 
+              label: 'Exit',
+              click() { 
+                app.quit();
+              } 
+            }
+        ]
+    },
+    ...oldMenu.items.slice(1)
   ])
   Menu.setApplicationMenu(menu); 
 };
