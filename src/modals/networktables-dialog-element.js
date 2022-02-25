@@ -1,6 +1,6 @@
-import { css, html } from 'lit';
-import preferences from '../preferences.js';
-import DialogElement from './dialog-element';
+const { css, html } = window.FwcDashboard.lit;
+const { preferences } = require('../preferences.js');
+const { DialogElement } = require('./dialog-element');
 
 class NetworkTablesDialog extends DialogElement {
 
@@ -27,12 +27,12 @@ class NetworkTablesDialog extends DialogElement {
   `;
 
   static properties = {
-    serverInput: { state: true },
+    address: { state: true },
   };
 
   constructor() {
     super();
-    this.serverInput = preferences.ntAddress;
+    this.address = preferences.ntAddress;
   }
 
   onClose() {
@@ -40,17 +40,22 @@ class NetworkTablesDialog extends DialogElement {
   }
 
   onConfirm() {
-    if (serverInput.value !== preferences.ntAddress) {
-      preferences.ntAddress = serverInput.value;
+    if (this.address !== preferences.ntAddress) {
+      preferences.ntAddress = this.address;
     }
     this.closeDialog();
+  }
+
+  onChange(ev) {
+    const input = ev.target || ev.path[0];
+    this.address = input.value;
   }
 
   render() {
     return html`
       <div class="networktables-dialog-content">
         <p>NetworkTables Settings</p>
-        <vaadin-text-field label="Robot Address" theme="small" value=${this.serverInput}></vaadin-text-field>
+        <vaadin-text-field label="Robot Address" theme="small" value=${this.address} @change=${this.onChange}></vaadin-text-field>
         <div class="networktables-dialog-buttons">
           <vaadin-button part="confirm-button" theme="success primary small" @click=${this.onConfirm}>Confirm</vaadin-button>
           <vaadin-button part="close-button" theme="small" @click=${this.onClose}>Close</vaadin-button>

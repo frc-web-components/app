@@ -1,6 +1,6 @@
-import { LitElement } from 'lit';
+const { LitElement } = window.FwcDashboard.lit;
 
-export default class DialogElement extends LitElement {
+class DialogElement extends LitElement {
   closeDialog() {
     this.dispatchEvent(new CustomEvent('closeDialog', {
       bubbles: true,
@@ -8,3 +8,5 @@ export default class DialogElement extends LitElement {
     }));
   }
 }
+
+module.exports.DialogElement = DialogElement;

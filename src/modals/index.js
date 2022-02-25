@@ -1,6 +1,4 @@
-import './networktables-dialog-element.js';
-
-export default class NetworkTablesDialog {
+class NetworkTablesDialog {
 
   constructor() {
     this._dialog = document.createElement('vaadin-dialog');
@@ -17,15 +15,22 @@ export default class NetworkTablesDialog {
   }
 
   _initDialog() {
+    const that = this;
     this._dialog.renderer = function(root, dialog) {
       if (!root.firstElementChild) {
         const div = window.document.createElement('div');
         div.innerHTML = `<networktables-dialog></networktables-dialog>`;
         div.addEventListener('closeDialog', () => {
-          this.close();
+          that.close();
         });
         root.appendChild(div);
       }
     }
   }
+}
+
+const ntDialog = new NetworkTablesDialog();
+
+export function openModal() {
+  ntDialog.open();
 }

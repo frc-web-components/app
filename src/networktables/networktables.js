@@ -142,4 +142,4 @@ class NetworkTables {
 }
 
 
-export default new NetworkTables();
+exports.NetworkTables = new NetworkTables();

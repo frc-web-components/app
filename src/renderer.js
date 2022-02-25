@@ -1,13 +1,16 @@
 import { renderDashboard } from '../node_modules/@frc-web-components/components/dist/components.es.js';
-import NetworkTables from './networktables/networktables.js';
-import NetworkTablesProvider  from './networktables/provider.js';
-import { openModal } from './modals/modal.js';
-import preferences from './preferences.js';
+const { NetworkTables } = require('./networktables/networktables.js');
+const { NetworkTablesProvider } =  require('./networktables/provider.js');
+import { openModal } from './modals/index.js';
+const { preferences } = require('./preferences.js');
 const { ipcRenderer } = require('electron');
 const fs = require("fs");
 const path = require('path');
 
-window.NT = NetworkTables;
+
+function includeDialogs() {
+  require('./modals/networktables-dialog-element');
+} 
 
 function setDashboardTitle(dashboardName) {
   document.title = `${dashboardName} - FRC Web Components`;
@@ -56,9 +59,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const provider = new NetworkTablesProvider();
   const api = renderDashboard(document.querySelector('#dash'), provider, true);
   window.FwcDashboard = {
-    addElements: api.addElements
+    addElements: api.addElements,
+    lit: api.lit,
+    NetworkTables,
   };
   document.querySelector('#loading')?.remove();
+  includeDialogs();
   if (preferences.lastOpenedDashboard) {
     openDashboard(preferences.lastOpenedDashboard, api);
   }

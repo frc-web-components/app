@@ -44,4 +44,4 @@ class Preferences {
   }
 }
 
-export default new Preferences();
+exports.preferences = new Preferences();

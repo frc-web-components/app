@@ -1,8 +1,8 @@
-import NetworkTables from './networktables.js';
+const { NetworkTables } = require('./networktables.js');
 const { SourceProvider } = require('@webbitjs/store');
-import preferences from '../preferences.js';
+const { preferences } = require('../preferences.js');
 
-export default class NetworkTablesProvider extends SourceProvider {
+class NetworkTablesProvider extends SourceProvider {
 
   constructor() {
     super();
@@ -20,3 +20,5 @@ export default class NetworkTablesProvider extends SourceProvider {
     NetworkTables.setValue(key, value);
   }
 }
+
+exports.NetworkTablesProvider = NetworkTablesProvider;
