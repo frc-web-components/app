@@ -92,12 +92,20 @@ const createWindow = () => {
                   });
               }
             },
+            { type: 'separator' },
             {
               label: 'Preferences',
               click() {
                 mainWindow.webContents.send('ntModalOpen');
               }
             },
+            {
+              label: 'Plugins',
+              click() {
+                mainWindow.webContents.send('pluginsModalOpen');
+              }
+            },
+            { type: 'separator' },
             { 
               label: 'Exit',
               click() { 

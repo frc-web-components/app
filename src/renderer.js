@@ -1,7 +1,7 @@
 import { renderDashboard } from '../node_modules/@frc-web-components/components/dist/components.es.js';
 const { NetworkTables } = require('./networktables/networktables.js');
 const { NetworkTablesProvider } =  require('./networktables/provider.js');
-import { openModal } from './modals/index.js';
+import { openNtDialog, openPluginsDialog } from './modals/index.js';
 const { preferences } = require('./preferences.js');
 const { ipcRenderer } = require('electron');
 const fs = require("fs");
@@ -10,6 +10,7 @@ const path = require('path');
 
 function includeDialogs() {
   require('./modals/networktables-dialog-element');
+  require('./modals/plugins-dialog-element');
 } 
 
 function setDashboardTitle(dashboardName) {
@@ -70,7 +71,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   ipcRenderer.on('ntModalOpen', () => {
-    openModal();
+    openNtDialog();
+  });
+
+  ipcRenderer.on('pluginsModalOpen', () => {
+    openPluginsDialog();
   });
   
   ipcRenderer.on('dashboardOpen', (ev, filePaths) => {
@@ -85,4 +90,5 @@ document.addEventListener('DOMContentLoaded', () => {
   ipcRenderer.on('newDashboard', () => {
     newDashboard(api);
   });
+
 });

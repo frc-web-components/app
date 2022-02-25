@@ -1,7 +1,8 @@
 class NetworkTablesDialog {
 
-  constructor() {
+  constructor(dialogElementName) {
     this._dialog = document.createElement('vaadin-dialog');
+    this._dialogElementName = dialogElementName;
     document.body.append(this._dialog);
     this._initDialog();
   }
@@ -19,7 +20,7 @@ class NetworkTablesDialog {
     this._dialog.renderer = function(root, dialog) {
       if (!root.firstElementChild) {
         const div = window.document.createElement('div');
-        div.innerHTML = `<networktables-dialog></networktables-dialog>`;
+        div.innerHTML = `<${that._dialogElementName}></${that._dialogElementName}>`;
         div.addEventListener('closeDialog', () => {
           that.close();
         });
@@ -29,8 +30,13 @@ class NetworkTablesDialog {
   }
 }
 
-const ntDialog = new NetworkTablesDialog();
+const ntDialog = new NetworkTablesDialog('networktables-dialog');
+const pluginsDialog = new NetworkTablesDialog('plugins-dialog');
 
-export function openModal() {
+export function openNtDialog() {
   ntDialog.open();
+}
+
+export function openPluginsDialog() {
+  pluginsDialog.open();
 }
