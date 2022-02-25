@@ -55,6 +55,9 @@ document.addEventListener('DOMContentLoaded', () => {
   setDashboardTitle('Untitled Dashboard')
   const provider = new NetworkTablesProvider();
   const api = renderDashboard(document.querySelector('#dash'), provider, true);
+  window.FwcDashboard = {
+    addElements: api.addElements
+  };
   document.querySelector('#loading')?.remove();
   if (preferences.lastOpenedDashboard) {
     openDashboard(preferences.lastOpenedDashboard, api);
