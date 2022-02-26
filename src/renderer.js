@@ -6,6 +6,7 @@ const { preferences } = require('./preferences.js');
 const { ipcRenderer } = require('electron');
 const fs = require("fs");
 const path = require('path');
+const { loadPlugins } = require('./plugins');
 
 
 function includeDialogs() {
@@ -66,6 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
   document.querySelector('#loading')?.remove();
   includeDialogs();
+  loadPlugins();
   if (preferences.lastOpenedDashboard) {
     openDashboard(preferences.lastOpenedDashboard, api);
   }

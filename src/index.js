@@ -33,6 +33,19 @@ const createWindow = () => {
     lastOpenedDashboard = path;
   });
 
+  ipcMain.handle('loadPluginDialogOpen', (ev, path) => {
+    dialog.showOpenDialog(mainWindow, { 
+      title: 'Load Plugin',
+      filters: [{ name: 'Javascript', extensions: ['js'] }],
+      properties: ['openFile'] 
+    })
+      .then(({ canceled, filePaths }) => {
+        if (!canceled) {
+          mainWindow.webContents.send('pluginLoad', filePaths);
+        }
+      });
+  });
+
   const oldMenu = Menu.getApplicationMenu();
   const menu = Menu.buildFromTemplate([
     {

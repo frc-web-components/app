@@ -1,6 +1,7 @@
 const { css, html } = window.FwcDashboard.lit;
 const { DialogElement } = require('./dialog-element');
 const { preferences } = require('../preferences.js');
+const { ipcRenderer } = require('electron');
 
 class PluginsDialog extends DialogElement {
 
@@ -55,14 +56,19 @@ class PluginsDialog extends DialogElement {
     preferences.onPluginsChange(() => {
       this.requestUpdate();
     });
+
+    ipcRenderer.on('pluginLoad', (ev, filePaths) => {
+      const [pluginPath] = filePaths;
+      preferences.addPlugin(pluginPath);
+    });
   }
 
   onClose() {
     this.closeDialog();
   }
 
-  onAdd() {
-
+  onLoad() {
+    ipcRenderer.invoke('loadPluginDialogOpen');
   }
 
   onRemove(plugin) {
@@ -70,8 +76,8 @@ class PluginsDialog extends DialogElement {
   }
 
   onEnableToggle(ev, plugin) {
-    console.log('toggle:', ev);
-    // preferences.enablePlugin(plugin.path, ev.detail.checked);
+    const input = ev.target || ev.path[0];
+    preferences.enablePlugin(plugin.path, input.checked);
   }
 
   render() {
@@ -94,11 +100,11 @@ class PluginsDialog extends DialogElement {
         `)}
         <div class="plugins-dialog-buttons">
           <vaadin-button 
-            part="add-plugin-button" 
+            part="load-plugin-button" 
             theme="success primary small" 
-            @click=${this.onAdd}
+            @click=${this.onLoad}
           >
-            Add Plugin
+            Load Plugin
           </vaadin-button>
           <vaadin-button part="close-button" theme="small" @click=${this.onClose}>Close</vaadin-button>
         </div>
