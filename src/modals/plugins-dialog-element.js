@@ -1,5 +1,6 @@
 const { css, html } = window.FwcDashboard.lit;
 const { DialogElement } = require('./dialog-element');
+const { preferences } = require('../preferences.js');
 
 class PluginsDialog extends DialogElement {
 
@@ -46,50 +47,59 @@ class PluginsDialog extends DialogElement {
     }
   `;
 
-  static properties = {
-    address: { state: true },
-  };
-
   constructor() {
     super();
-    this.plugins = [
-      { name: 'Plugin 1', enabled: true },
-      { name: 'Plugin 2', enabled: false },
-      { name: 'Plugin 3', enabled: true },
-    ]
+  }
+
+  firstUpdated() {
+    preferences.onPluginsChange(() => {
+      this.requestUpdate();
+    });
   }
 
   onClose() {
     this.closeDialog();
   }
 
-  onConfirm() {
-    this.closeDialog();
+  onAdd() {
+
+  }
+
+  onRemove(plugin) {
+    preferences.removePlugin(plugin.path);
+  }
+
+  onEnableToggle(ev, plugin) {
+    console.log('toggle:', ev);
+    // preferences.enablePlugin(plugin.path, ev.detail.checked);
   }
 
   render() {
-    const selectedPlugins = [];
-    this.plugins.forEach(({ enabled }, index) => {
-      if (enabled) {
-        selectedPlugins.push(index);
-      }
-    });
     return html`
       <div class="plugins-dialog-content">
         <p>Plugins</p>
-        ${this.plugins.map(plugin => html`
+        ${preferences.plugins.map(plugin => html`
           <div class="item">
             <div>
-              <vaadin-checkbox ?checked=${plugin.enabled}></vaadin-checkbox>
+              <vaadin-checkbox 
+                ?checked=${plugin.enabled}
+                @change=${ev => this.onEnableToggle(ev, plugin)}
+              ></vaadin-checkbox>
               <span>${plugin.name}</span>
             </div>
-            <vaadin-button theme="icon small tertiary">
+            <vaadin-button theme="icon small tertiary" @click=${() => this.onRemove(plugin)}>
               <iron-icon icon="vaadin:close-small"></iron-icon>
             </vaadin-button>
           </div>
         `)}
         <div class="plugins-dialog-buttons">
-          <vaadin-button part="confirm-button" theme="success primary small" @click=${this.onConfirm}>Confirm</vaadin-button>
+          <vaadin-button 
+            part="add-plugin-button" 
+            theme="success primary small" 
+            @click=${this.onAdd}
+          >
+            Add Plugin
+          </vaadin-button>
           <vaadin-button part="close-button" theme="small" @click=${this.onClose}>Close</vaadin-button>
         </div>
       </div>
