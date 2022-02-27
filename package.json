@@ -1,7 +1,7 @@
 {
   "name": "frc-web-components",
   "productName": "frc-web-components",
-  "version": "2.0.12",
+  "version": "2.0.13",
   "description": "Electron app for FRC Web Components dashboard",
   "main": "src/index.js",
   "scripts": {
@@ -23,10 +23,6 @@
   "homepage": "https://github.com/frc-web-components/app#readme",
   "config": {
     "forge": {
-      "packagerConfig": {
-        "name": "frc-web-components",
-        "executableName": "FRC Web Components"
-      },
       "makers": [
         {
           "name": "@electron-forge/maker-squirrel",
