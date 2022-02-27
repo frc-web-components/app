@@ -26,6 +26,9 @@
       "packagerConfig": {
         "executableName": "FRC Web Components"
       },
+      "electronPackagerConfig": {
+        "executableName": "FRC Web Components"
+      },
       "makers": [
         {
           "name": "@electron-forge/maker-squirrel",
@@ -42,7 +45,6 @@
         {
           "name": "@electron-forge/maker-deb",
           "config": {
-            "executableName": "FRC Web Components"
           }
         },
         {
