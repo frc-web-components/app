@@ -12,30 +12,30 @@ class Preferences {
   }
 
   get ntAddress() {
-    return store.get(`nt.address[${this._windowId}]`) ?? 'localhost';
+    return store.get(`nt.address.${this._windowId}`) ?? 'localhost';
   }
 
   set ntAddress(address) {
-    return store.set(`nt.address[${this._windowId}]`, address);
+    return store.set(`nt.address.${this._windowId}`, address);
   }
 
   get ntPort() {
-    return store.get(`nt.port[${this._windowId}]`);
+    return store.get(`nt.port.${this._windowId}`);
   }
 
   set ntPort(port) {
-    return store.set(`nt.port[${this._windowId}]`, port);
+    return store.set(`nt.port.${this._windowId}`, port);
   }
 
   get lastOpenedDashboard() {
-    return store.get(`lastOpenedDashboard[${this._windowId}]`);
+    return store.get(`lastOpenedDashboard.${this._windowId}`);
   }
 
   set lastOpenedDashboard(path) {
     if (typeof path === 'undefined') {
-      store.delete(`lastOpenedDashboard[${this._windowId}]`);
+      store.delete(`lastOpenedDashboard.${this._windowId}`);
     } else {
-      store.set(`lastOpenedDashboard[${this._windowId}]`, path);
+      store.set(`lastOpenedDashboard.${this._windowId}`, path);
     }
   }
 
@@ -78,12 +78,12 @@ class Preferences {
   }
 
   onNtChange(callback) {
-    store.onDidChange(`nt.port[${this._windowId}]`, callback);
-    store.onDidChange(`nt.address[${this._windowId}]`, callback);
+    store.onDidChange(`nt.port.${this._windowId}`, callback);
+    store.onDidChange(`nt.address.${this._windowId}`, callback);
   }
 
   onLastOpenedDashboardChange(callback) {
-    store.onDidChange(`lastOpenedDashboard[${this._windowId}]`, callback);
+    store.onDidChange(`lastOpenedDashboard.${this._windowId}`, callback);
   }
 
   onPluginsChange(callback) {

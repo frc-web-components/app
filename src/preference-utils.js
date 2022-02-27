@@ -2,29 +2,34 @@ const Store = require('electron-store');
 
 const store = new Store();
 
+function deleteAllWindowPreferences() {
+    store.delete(`nt.address`);
+    store.delete(`nt.port`);
+    store.delete(`lastOpenedDashboard`);
+}
+
 function getPreferencesForWindow(windowId) {
     return {
-      ntAddress: store.get(`nt.address[${windowId}]`),
-      ntPort: store.get(`nt.port[${windowId}]`),
-      lastOpenedDashboard: store.get(`lastOpenedDashboard[${windowId}]`)
+      ntAddress: store.get(`nt.address.${windowId}`),
+      ntPort: store.get(`nt.port.${windowId}`),
+      lastOpenedDashboard: store.get(`lastOpenedDashboard.${windowId}`)
     }
   }
   
   function deletePreferencesForWindow(windowId) {
-    store.delete(`nt.address[${windowId}]`);
-    store.delete(`nt.port[${windowId}]`);
-    store.delete(`lastOpenedDashboard[${windowId}]`);
+    store.delete(`nt.address.${windowId}`);
+    store.delete(`nt.port.${windowId}`);
+    store.delete(`lastOpenedDashboard.${windowId}`);
   }
   
   
   function setPreferencesForWindow(windowId, { ntAddress, ntPort, lastOpenedDashboard }) {
-    store.set(`nt.address[${windowId}]`, ntAddress);
-    store.set(`nt.port[${windowId}]`, ntPort);
-    store.set(`lastOpenedDashboard[${windowId}]`, lastOpenedDashboard);
+    store.set(`nt.address.${windowId}`, ntAddress);
+    store.set(`nt.port.${windowId}`, ntPort);
+    store.set(`lastOpenedDashboard.${windowId}`, lastOpenedDashboard);
   }
-  
-  console.log('getPreferencesForWindow:', getPreferencesForWindow(1))
-  
+    
+  exports.deleteAllWindowPreferences = deleteAllWindowPreferences;
   exports.getPreferencesForWindow = getPreferencesForWindow;
   exports.setPreferencesForWindow = setPreferencesForWindow;
   exports.deletePreferencesForWindow = deletePreferencesForWindow;
