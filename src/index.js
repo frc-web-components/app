@@ -1,5 +1,6 @@
 const { app, BrowserWindow, Menu, dialog, ipcMain } = require('electron');
 const path = require('path');
+const Store = require('electron-store');
 // const { openModal } = require('./modals/modal.js');
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -9,6 +10,7 @@ if (require('electron-squirrel-startup')) {
 }
 
 const createWindow = () => {
+  Store.initRenderer();
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 800,
