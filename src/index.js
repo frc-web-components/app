@@ -1,6 +1,7 @@
 const { app, BrowserWindow, Menu, dialog, ipcMain } = require('electron');
 const path = require('path');
 const Store = require('electron-store');
+const Remote = require("@electron/remote/main");
 
 const windows = new Set();
 const lastOpenedDashboard = new Map();
@@ -25,6 +26,8 @@ function createWindow() {
     },
   });
 
+  Remote.enable(window.webContents);
+
   window.on("closed", () => {
     windows.delete(window);
     window = null;
@@ -37,6 +40,8 @@ function createWindow() {
 
 const initialize = () => {
   Store.initRenderer();
+  Remote.initialize();
+  
   createWindow();
 
   ipcMain.handle('lastOpenedDashboardChange', (ev, path) => {

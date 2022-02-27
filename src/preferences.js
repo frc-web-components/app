@@ -1,37 +1,39 @@
 const Store = require('electron-store');
 const pathModule = require('path');
+const Remote = require('@electron/remote');
 
 class Preferences {
 
   constructor() {
     this._store = new Store();
+    this._windowId = Remote.getCurrentWindow().id;
   }
 
   get ntAddress() {
-    return this._store.get('nt.address') ?? 'localhost';
+    return this._store.get(`nt.address[${this._windowId}]`) ?? 'localhost';
   }
 
   set ntAddress(address) {
-    return this._store.set('nt.address', address);
+    return this._store.set(`nt.address[${this._windowId}]`, address);
   }
 
   get ntPort() {
-    return this._store.get('nt.port');
+    return this._store.get(`nt.port[${this._windowId}]`);
   }
 
   set ntPort(port) {
-    return this._store.set('nt.port', port);
+    return this._store.set(`nt.port[${this._windowId}]`, port);
   }
 
   get lastOpenedDashboard() {
-    return this._store.get('lastOpenedDashboard');
+    return this._store.get(`lastOpenedDashboard[${this._windowId}]`);
   }
 
   set lastOpenedDashboard(path) {
     if (typeof path === 'undefined') {
-      this._store.delete('lastOpenedDashboard');
+      this._store.delete(`lastOpenedDashboard[${this._windowId}]`);
     } else {
-      this._store.set('lastOpenedDashboard', path);
+      this._store.set(`lastOpenedDashboard[${this._windowId}]`, path);
     }
   }
 
@@ -74,12 +76,12 @@ class Preferences {
   }
 
   onNtChange(callback) {
-    this._store.onDidChange('nt.port', callback);
-    this._store.onDidChange('nt.address', callback);
+    this._store.onDidChange(`nt.port[${this._windowId}]`, callback);
+    this._store.onDidChange(`nt.address[${this._windowId}]`, callback);
   }
 
   onLastOpenedDashboardChange(callback) {
-    this._store.onDidChange('lastOpenedDashboard', callback);
+    this._store.onDidChange(`lastOpenedDashboard[${this._windowId}]`, callback);
   }
 
   onPluginsChange(callback) {

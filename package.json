@@ -1,7 +1,7 @@
 {
   "name": "frc-web-components",
   "productName": "frc-web-components",
-  "version": "2.0.13",
+  "version": "2.0.14",
   "description": "Electron app for FRC Web Components dashboard",
   "main": "src/index.js",
   "scripts": {
@@ -69,6 +69,7 @@
     "electron": "^17.0.1"
   },
   "dependencies": {
+    "@electron/remote": "^2.0.5",
     "@frc-web-components/components": "^2.0.11",
     "@vaadin/vaadin": "^17.0.7",
     "@webbitjs/store": "^3.1.0",
