@@ -24,16 +24,18 @@
   "config": {
     "forge": {
       "packagerConfig": {
-        "executableName": "FRC Web Components"
+        "executableName": "FRC Web Components",
+        "name": "frc-web-components"
       },
       "electronPackagerConfig": {
-        "executableName": "FRC Web Components"
+        "executableName": "FRC Web Components",
+        "name": "frc-web-components"
       },
       "makers": [
         {
           "name": "@electron-forge/maker-squirrel",
           "config": {
-            "name": "frc_web_components"
+            "name": "frc-web-components"
           }
         },
         {
