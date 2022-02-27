@@ -1,7 +1,7 @@
 {
   "name": "frc-web-components",
   "productName": "FRC Web Components",
-  "version": "2.0.7",
+  "version": "2.0.8",
   "description": "Electron app for FRC Web Components dashboard",
   "main": "src/index.js",
   "scripts": {
