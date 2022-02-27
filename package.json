@@ -1,6 +1,6 @@
 {
   "name": "frc-web-components",
-  "productName": "frc-web-components",
+  "productName": "FRC Web Components",
   "version": "2.0.11",
   "description": "Electron app for FRC Web Components dashboard",
   "main": "src/index.js",
@@ -24,12 +24,7 @@
   "config": {
     "forge": {
       "packagerConfig": {
-        "executableName": "FRC Web Components",
-        "name": "frc-web-components"
-      },
-      "electronPackagerConfig": {
-        "executableName": "FRC Web Components",
-        "name": "frc-web-components"
+        "executableName": "FRC Web Components"
       },
       "makers": [
         {
@@ -46,8 +41,7 @@
         },
         {
           "name": "@electron-forge/maker-deb",
-          "config": {
-          }
+          "config": {}
         },
         {
           "name": "@electron-forge/maker-rpm",
