@@ -30,7 +30,6 @@
         {
           "name": "@electron-forge/maker-squirrel",
           "config": {
-            "name": "frc_web_components"
           }
         },
         {
