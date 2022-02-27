@@ -8,7 +8,7 @@ class Preferences {
   }
 
   get ntAddress() {
-    return this._store.get('nt.address');
+    return this._store.get('nt.address') ?? 'localhost';
   }
 
   set ntAddress(address) {

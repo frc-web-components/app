@@ -1,7 +1,9 @@
 const { app, BrowserWindow, Menu, dialog, ipcMain } = require('electron');
 const path = require('path');
 const Store = require('electron-store');
-// const { openModal } = require('./modals/modal.js');
+
+const windows = new Set();
+const lastOpenedDashboard = new Map();
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -9,10 +11,9 @@ if (require('electron-squirrel-startup')) {
   app.quit();
 }
 
-const createWindow = () => {
-  Store.initRenderer();
+function createWindow() {
   // Create the browser window.
-  const mainWindow = new BrowserWindow({
+  let window = new BrowserWindow({
     width: 800,
     height: 600,
     title: "FRC Web Components",
@@ -24,27 +25,34 @@ const createWindow = () => {
     },
   });
 
+  window.on("closed", () => {
+    windows.delete(window);
+    window = null;
+  });
+
   // and load the index.html of the app.
-  mainWindow.loadFile(path.join(__dirname, 'index.html'));
+  window.loadFile(path.join(__dirname, 'index.html'));
+  windows.add(window);
+}
 
-  // Open the DevTools.
-  // mainWindow.webContents.openDevTools();
-
-  let lastOpenedDashboard;
+const initialize = () => {
+  Store.initRenderer();
+  createWindow();
 
   ipcMain.handle('lastOpenedDashboardChange', (ev, path) => {
-    lastOpenedDashboard = path;
+    lastOpenedDashboard.set(ev.sender.id, path);
   });
 
   ipcMain.handle('loadPluginDialogOpen', (ev, path) => {
-    dialog.showOpenDialog(mainWindow, { 
+    const window = BrowserWindow.fromId(ev.sender.id);
+    dialog.showOpenDialog(window, { 
       title: 'Load Plugin',
       filters: [{ name: 'Javascript', extensions: ['js'] }],
       properties: ['openFile'] 
     })
       .then(({ canceled, filePaths }) => {
         if (!canceled) {
-          mainWindow.webContents.send('pluginLoad', filePaths);
+          window.webContents.send('pluginLoad', filePaths);
         }
       });
   });
@@ -56,38 +64,45 @@ const createWindow = () => {
         submenu: [
             {
               label: 'New Dashboard',
-              click() {
-                mainWindow.webContents.send('newDashboard');
+              click(_, window) {
+                window.webContents.send('newDashboard');
               }
             },
             {
+              label: 'New Window',
+              click(_, window) {
+                createWindow();
+              }
+            },
+            { type: 'separator' },
+            {
               label: 'Open Dashboard...',
-              click() {
-                dialog.showOpenDialog(mainWindow, { 
+              click(_, window) {
+                dialog.showOpenDialog(window, { 
                   title: 'Open Dashboard',
                   filters: [{ name: 'HTML', extensions: ['html', 'htm'] }],
                   properties: ['openFile'] 
                 })
                   .then(({ canceled, filePaths }) => {
                     if (!canceled) {
-                      mainWindow.webContents.send('dashboardOpen', filePaths);
+                      window.webContents.send('dashboardOpen', filePaths);
                     }
                   });
               }
             },
             {
               label: 'Save Dashboard',
-              click() {
-                if (lastOpenedDashboard) {
-                  mainWindow.webContents.send('dashboardSave', lastOpenedDashboard);
+              click(_, window) {
+                if (lastOpenedDashboard.get(window.id)) {
+                  window.webContents.send('dashboardSave', lastOpenedDashboard.get(window.id));
                 } else {
-                  dialog.showSaveDialog(mainWindow, { 
+                  dialog.showSaveDialog(window, { 
                     title: 'Save Dashboard',
                     filters: [{ name: 'HTML', extensions: ['html', 'htm'] }],
                   })
                     .then(({ canceled, filePath }) => {
                       if (!canceled) {
-                        mainWindow.webContents.send('dashboardSave', filePath);
+                        window.webContents.send('dashboardSave', filePath);
                       }
                     });
                 }
@@ -95,15 +110,15 @@ const createWindow = () => {
             },
             {
               label: 'Save Dashboard As...',
-              click() {
-                dialog.showSaveDialog(mainWindow, { 
+              click(_, window) {
+                dialog.showSaveDialog(window, { 
                   title: 'Save Dashboard',
                   filters: [{ name: 'HTML', extensions: ['html', 'htm'] }],
-                  defaultPath: lastOpenedDashboard,
+                  defaultPath: lastOpenedDashboard.get(window.id),
                 })
                   .then(({ canceled, filePath }) => {
                     if (!canceled) {
-                      mainWindow.webContents.send('dashboardSave', filePath);
+                      window.webContents.send('dashboardSave', filePath);
                     }
                   });
               }
@@ -111,14 +126,14 @@ const createWindow = () => {
             { type: 'separator' },
             {
               label: 'Preferences',
-              click() {
-                mainWindow.webContents.send('ntModalOpen');
+              click(_, window) {
+                window.webContents.send('ntModalOpen');
               }
             },
             {
               label: 'Plugins',
-              click() {
-                mainWindow.webContents.send('pluginsModalOpen');
+              click(_, window) {
+                window.webContents.send('pluginsModalOpen');
               }
             },
             { type: 'separator' },
@@ -138,7 +153,7 @@ const createWindow = () => {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow);
+app.on('ready', initialize);
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
@@ -153,7 +168,7 @@ app.on('activate', () => {
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow();
+    initialize();
   }
 });
 
