@@ -30,6 +30,7 @@
         {
           "name": "@electron-forge/maker-squirrel",
           "config": {
+            "name": "frc_web_components"
           }
         },
         {
@@ -40,7 +41,9 @@
         },
         {
           "name": "@electron-forge/maker-deb",
-          "config": {}
+          "config": {
+            "executableName": "FRC Web Components"
+          }
         },
         {
           "name": "@electron-forge/maker-rpm",
