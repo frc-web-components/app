@@ -2,6 +2,7 @@ const { app, BrowserWindow, Menu, dialog, ipcMain } = require('electron');
 const path = require('path');
 const Store = require('electron-store');
 const Remote = require("@electron/remote/main");
+const { deletePreferencesForWindow, getPreferencesForWindow, setPreferencesForWindow } = require('./preference-utils');
 
 const windows = new Set();
 const lastOpenedDashboard = new Map();

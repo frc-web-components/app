@@ -1,44 +1,46 @@
 const Store = require('electron-store');
 const pathModule = require('path');
-const Remote = require('@electron/remote');
+
+const store = new Store();
 
 class Preferences {
 
   constructor() {
-    this._store = new Store();
+    const Remote = require('@electron/remote');
     this._windowId = Remote.getCurrentWindow().id;
+    console.log('windowId:', this._windowId);
   }
 
   get ntAddress() {
-    return this._store.get(`nt.address[${this._windowId}]`) ?? 'localhost';
+    return store.get(`nt.address[${this._windowId}]`) ?? 'localhost';
   }
 
   set ntAddress(address) {
-    return this._store.set(`nt.address[${this._windowId}]`, address);
+    return store.set(`nt.address[${this._windowId}]`, address);
   }
 
   get ntPort() {
-    return this._store.get(`nt.port[${this._windowId}]`);
+    return store.get(`nt.port[${this._windowId}]`);
   }
 
   set ntPort(port) {
-    return this._store.set(`nt.port[${this._windowId}]`, port);
+    return store.set(`nt.port[${this._windowId}]`, port);
   }
 
   get lastOpenedDashboard() {
-    return this._store.get(`lastOpenedDashboard[${this._windowId}]`);
+    return store.get(`lastOpenedDashboard[${this._windowId}]`);
   }
 
   set lastOpenedDashboard(path) {
     if (typeof path === 'undefined') {
-      this._store.delete(`lastOpenedDashboard[${this._windowId}]`);
+      store.delete(`lastOpenedDashboard[${this._windowId}]`);
     } else {
-      this._store.set(`lastOpenedDashboard[${this._windowId}]`, path);
+      store.set(`lastOpenedDashboard[${this._windowId}]`, path);
     }
   }
 
   get plugins() {
-    return this._store.get('plugins') ?? [];
+    return store.get('plugins') ?? [];
   }
 
   hasPlugin(path) {
@@ -54,12 +56,12 @@ class Preferences {
       ...this.plugins,
       { name, path, enabled: true }
     ];
-    this._store.set('plugins', plugins);
+    store.set('plugins', plugins);
   }
 
   removePlugin(path) {
     const plugins = this.plugins.filter(plugin => plugin.path !== path);
-    this._store.set('plugins', plugins);
+    store.set('plugins', plugins);
   }
 
   enablePlugin(path, enabled) {
@@ -72,20 +74,20 @@ class Preferences {
       enabled,
       ...this.plugins[pluginIndex],
     }
-    this._store.set('plugins', plugins);
+    store.set('plugins', plugins);
   }
 
   onNtChange(callback) {
-    this._store.onDidChange(`nt.port[${this._windowId}]`, callback);
-    this._store.onDidChange(`nt.address[${this._windowId}]`, callback);
+    store.onDidChange(`nt.port[${this._windowId}]`, callback);
+    store.onDidChange(`nt.address[${this._windowId}]`, callback);
   }
 
   onLastOpenedDashboardChange(callback) {
-    this._store.onDidChange(`lastOpenedDashboard[${this._windowId}]`, callback);
+    store.onDidChange(`lastOpenedDashboard[${this._windowId}]`, callback);
   }
 
   onPluginsChange(callback) {
-    this._store.onDidChange('plugins', callback);
+    store.onDidChange('plugins', callback);
   }
 }
 
