@@ -2,6 +2,14 @@ const Store = require('electron-store');
 
 const store = new Store();
 
+function setOrDelete(key, value) {
+    if (typeof value === 'undefined') {
+        store.delete(key);
+    } else {
+        store.set(key, value);
+    }
+}
+
 function deleteAllWindowPreferences() {
     store.delete(`nt.address`);
     store.delete(`nt.port`);
@@ -9,6 +17,7 @@ function deleteAllWindowPreferences() {
 }
 
 function getPreferencesForWindow(windowId) {
+    console.log('windowId:', windowId)
     return {
       ntAddress: store.get(`nt.address.${windowId}`),
       ntPort: store.get(`nt.port.${windowId}`),
@@ -22,14 +31,29 @@ function getPreferencesForWindow(windowId) {
     store.delete(`lastOpenedDashboard.${windowId}`);
   }
   
-  
   function setPreferencesForWindow(windowId, { ntAddress, ntPort, lastOpenedDashboard }) {
-    store.set(`nt.address.${windowId}`, ntAddress);
-    store.set(`nt.port.${windowId}`, ntPort);
-    store.set(`lastOpenedDashboard.${windowId}`, lastOpenedDashboard);
+    setOrDelete(`nt.address.${windowId}`, ntAddress);
+    setOrDelete(`nt.port.${windowId}`, ntPort);
+    setOrDelete(`lastOpenedDashboard.${windowId}`, lastOpenedDashboard);
+  }
+
+  function getWindowCountOnLastClose() {
+    const value = parseInt(store.get('windowCountOnLastClose'));
+    return isNaN(value) ? 0 : Math.min(value, 5);
+  }
+
+  function clearWindowCountOnLastClose() {
+    store.delete('windowCountOnLastClose');
+  }
+
+  function setWindowCountOnLastClose(count) {
+    store.set('windowCountOnLastClose', count);
   }
     
   exports.deleteAllWindowPreferences = deleteAllWindowPreferences;
   exports.getPreferencesForWindow = getPreferencesForWindow;
   exports.setPreferencesForWindow = setPreferencesForWindow;
   exports.deletePreferencesForWindow = deletePreferencesForWindow;
+  exports.getWindowCountOnLastClose = getWindowCountOnLastClose;
+  exports.clearWindowCountOnLastClose = clearWindowCountOnLastClose;
+  exports.setWindowCountOnLastClose = setWindowCountOnLastClose;

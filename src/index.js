@@ -2,10 +2,28 @@ const { app, BrowserWindow, Menu, dialog, ipcMain } = require('electron');
 const path = require('path');
 const Store = require('electron-store');
 const Remote = require("@electron/remote/main");
-const { deletePreferencesForWindow, getPreferencesForWindow, setPreferencesForWindow } = require('./preference-utils');
+const { 
+  deleteAllWindowPreferences, 
+  getPreferencesForWindow, 
+  setPreferencesForWindow,
+  clearWindowCountOnLastClose,
+  getWindowCountOnLastClose,
+  setWindowCountOnLastClose,
+} = require('./preference-utils');
 
 const windows = new Set();
 const lastOpenedDashboard = new Map();
+
+function updateWindowPreferences() {
+  const windowIds = [...windows.values()].map(window => window.id);
+  const preferencesForWindows = windowIds.map(id => getPreferencesForWindow(id));
+  deleteAllWindowPreferences();
+  preferencesForWindows.forEach((preferences, index) => {
+    const id = (index + 1).toString();
+    setPreferencesForWindow(id, preferences);
+  });
+  setWindowCountOnLastClose(windowIds.length);
+}
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -43,7 +61,12 @@ const initialize = () => {
   Store.initRenderer();
   Remote.initialize();
   
-  createWindow();
+  const windowCount = Math.max(1, getWindowCountOnLastClose());
+  clearWindowCountOnLastClose();
+
+  for(let i = 0; i < windowCount; i++) {
+    createWindow();
+  }
 
   ipcMain.handle('lastOpenedDashboardChange', (ev, path) => {
     lastOpenedDashboard.set(ev.sender.id, path);
@@ -146,6 +169,7 @@ const initialize = () => {
             { 
               label: 'Exit',
               click() { 
+                updateWindowPreferences();
                 app.quit();
               } 
             }
