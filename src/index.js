@@ -14,8 +14,15 @@ const {
 const windows = new Set();
 const lastOpenedDashboard = new Map();
 
-function updateWindowPreferences() {
-  const windowIds = [...windows.values()].map(window => window.id);
+
+let hasUpdateWindowPreferencesBeenCalled = false;
+
+function updateWindowPreferences(ids) {
+  // Should only be called once
+  if (hasUpdateWindowPreferencesBeenCalled) {
+    return;
+  }
+  const windowIds = ids ?? [...windows.values()].map(window => window.id);
   const preferencesForWindows = windowIds.map(id => getPreferencesForWindow(id));
   deleteAllWindowPreferences();
   preferencesForWindows.forEach((preferences, index) => {
@@ -23,6 +30,8 @@ function updateWindowPreferences() {
     setPreferencesForWindow(id, preferences);
   });
   setWindowCountOnLastClose(windowIds.length);
+  
+  hasUpdateWindowPreferencesBeenCalled = true;
 }
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -31,11 +40,13 @@ if (require('electron-squirrel-startup')) {
   app.quit();
 }
 
-function createWindow() {
+function createWindow(x, y) {
   // Create the browser window.
   let window = new BrowserWindow({
     width: 800,
     height: 600,
+    x,
+    y,
     title: "FRC Web Components",
     webPreferences: {
       nodeIntegration: true,
@@ -47,9 +58,15 @@ function createWindow() {
 
   Remote.enable(window.webContents);
 
+  const windowId = window.id;
+
   window.on("closed", () => {
-    windows.delete(window);
-    window = null;
+    if (windows.size === 1) {
+      updateWindowPreferences([windowId]);
+    } else {
+      windows.delete(window);
+      window = null;
+    }
   });
 
   // and load the index.html of the app.
@@ -65,7 +82,7 @@ const initialize = () => {
   clearWindowCountOnLastClose();
 
   for(let i = 0; i < windowCount; i++) {
-    createWindow();
+    createWindow(20 * (i + 1), 20 * (i + 1));
   }
 
   ipcMain.handle('lastOpenedDashboardChange', (ev, path) => {
@@ -189,9 +206,7 @@ app.on('ready', initialize);
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
+  app.quit();
 });
 
 app.on('activate', () => {

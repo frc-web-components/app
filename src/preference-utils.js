@@ -17,7 +17,6 @@ function deleteAllWindowPreferences() {
 }
 
 function getPreferencesForWindow(windowId) {
-    console.log('windowId:', windowId)
     return {
       ntAddress: store.get(`nt.address.${windowId}`),
       ntPort: store.get(`nt.port.${windowId}`),
