@@ -6,7 +6,7 @@ const { preferences } = require('./preferences.js');
 const { ipcRenderer } = require('electron');
 const fs = require("fs");
 const path = require('path');
-const { loadPlugins } = require('./plugins');
+import { loadPlugins } from './plugins.js';
 
 
 function includeDialogs() {
@@ -56,7 +56,7 @@ NetworkTables.addDeletionListener(key => {
   // console.log('entry deleted:', key);
 });
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   setDashboardTitle('Untitled Dashboard')
   const provider = new NetworkTablesProvider();
   const api = renderDashboard(document.querySelector('#dash'), provider, true);
@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
   document.querySelector('#loading')?.remove();
   includeDialogs();
-  loadPlugins();
+  loadPlugins(preferences.plugins);
   if (preferences.lastOpenedDashboard) {
     openDashboard(preferences.lastOpenedDashboard, api);
   }

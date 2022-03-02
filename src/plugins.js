@@ -1,23 +1,14 @@
-const { preferences } = require('./preferences');
-const fs = require("fs");
-
-function loadPlugins() {
-  const enabledPlugins = preferences.plugins.filter(({ enabled }) => enabled);
-  enabledPlugins.forEach(({ path, name }) => {
-    fs.readFile(path, (error, buffer) => {
-      if (!error) {
-        const fileContent = buffer.toString();
-        const pluginFunction = new Function(fileContent);
-        try {
-          pluginFunction();
-        } catch(error) {
-          console.error(`Error loading plugin "${name}"`, error);
-        }
-      } else {
-        console.error(error);
+export async function loadPlugins(plugins) {
+  const enabledPlugins = plugins.filter(({ enabled }) => enabled);
+  for (const { path, name } of enabledPlugins) {
+    try {
+      const exports = await import(path);
+      const { elements } = exports?.default ?? {};
+      if (elements) {
+        window.FwcDashboard.addElements(elements);
       }
-    });
-  });
+    } catch(error) {
+      console.error(`Error loading plugin "${name}"`, error);
+    }
+  }
 }
-
-exports.loadPlugins = loadPlugins;
