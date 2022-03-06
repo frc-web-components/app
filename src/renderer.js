@@ -19,16 +19,19 @@ function setDashboardTitle(dashboardName) {
 }
 
 function openDashboard(dashboardPath, api) {
-  fs.readFile(dashboardPath, (error, buffer) => {
-    if (!error) {
-      const fileContent = buffer.toString();
-      api.setHtml(fileContent);
-      preferences.lastOpenedDashboard = dashboardPath;
-      setDashboardTitle(path.parse(dashboardPath).name);
-      ipcRenderer.invoke('lastOpenedDashboardChange', dashboardPath);
-    } else {
-      console.error(error);
-    }
+  return new Promise(resolve => {
+    fs.readFile(dashboardPath, (error, buffer) => {
+      if (!error) {
+        const fileContent = buffer.toString();
+        api.setHtml(fileContent);
+        preferences.lastOpenedDashboard = dashboardPath;
+        setDashboardTitle(path.parse(dashboardPath).name);
+        ipcRenderer.invoke('lastOpenedDashboardChange', dashboardPath);
+      } else {
+        console.error(error);
+      }
+      resolve();
+    });
   });
 }
 
@@ -73,6 +76,14 @@ function addMainListeners(api) {
   ipcRenderer.on('newDashboard', () => {
     newDashboard(api);
   });
+
+  ipcRenderer.on('requestDashboardHtml', () => {
+    ipcRenderer.invoke('sendDashboardHtml', api.getHtml());
+  });
+
+  ipcRenderer.on('setDashboardHtml', (ev, html) => {
+    api.setHtml(html);
+  });
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -88,7 +99,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   includeDialogs();
   loadPlugins(preferences.plugins);
   if (preferences.lastOpenedDashboard) {
-    openDashboard(preferences.lastOpenedDashboard, api);
+    await openDashboard(preferences.lastOpenedDashboard, api);
   }
   addMainListeners(api);
+  ipcRenderer.invoke('dashboardReady');
 });
