@@ -89,7 +89,7 @@ function addMainListeners(api) {
 document.addEventListener('DOMContentLoaded', async () => {
   setDashboardTitle('Untitled Dashboard')
   const provider = new NetworkTablesProvider();
-  const api = renderDashboard(document.querySelector('#dash'), provider, true);
+  const api = renderDashboard(document.querySelector('#dash'), null /* provider */, true);
   window.FwcDashboard = {
     addElements: api.addElements,
     lit: api.lit,

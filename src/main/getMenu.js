@@ -68,12 +68,12 @@ function getMenu(oldMenu) {
           }
         },
         { type: 'separator' },
-        {
-          label: 'Preferences',
-          click(_, window) {
-            window.webContents.send('ntModalOpen');
-          }
-        },
+        // {
+        //   label: 'Preferences',
+        //   click(_, window) {
+        //     window.webContents.send('ntModalOpen');
+        //   }
+        // },
         {
           label: 'Plugins',
           click(_, window) {
