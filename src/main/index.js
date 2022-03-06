@@ -4,6 +4,7 @@ const Remote = require("@electron/remote/main");
 const { getMenu } = require("./getMenu");
 const { clearWindowCountOnLastClose, getWindowCountOnLastClose } = require('../preference-utils');
 const { windows } = require('./windows');
+const { reloadDashboards } = require('./reload-dashboards');
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -23,8 +24,7 @@ const initialize = () => {
   }
 
   ipcMain.handle('reloadDashboard', (ev, path) => {
-    const window = BrowserWindow.fromId(ev.sender.id);
-    window.reload();
+    reloadDashboards();
   });
 
   ipcMain.handle('loadPluginDialogOpen', (ev, path) => {

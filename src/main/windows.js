@@ -16,6 +16,10 @@ class Windows {
     this._hasUpdateWindowPreferencesBeenCalled = false;
   }
 
+  getWindows() {
+    return this._windows.values();
+  }
+
   updateWindowPreferences(ids) {
     // Should only be called once
     if (this._hasUpdateWindowPreferencesBeenCalled) {
