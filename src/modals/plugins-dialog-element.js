@@ -50,10 +50,12 @@ class PluginsDialog extends DialogElement {
 
   constructor() {
     super();
+    this._pluginsUpdated = false;
   }
 
   firstUpdated() {
     preferences.onPluginsChange(() => {
+      this._pluginsUpdated = true;
       this.requestUpdate();
     });
 
@@ -65,6 +67,12 @@ class PluginsDialog extends DialogElement {
 
   onClose() {
     this.closeDialog();
+    
+    if (this._pluginsUpdated) {
+      ipcRenderer.invoke('reloadDashboard');
+    }
+
+    this._pluginsUpdated = false;
   }
 
   onLoad() {

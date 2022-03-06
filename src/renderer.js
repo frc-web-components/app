@@ -52,26 +52,7 @@ function newDashboard(api) {
   ipcRenderer.invoke('lastOpenedDashboardChange', undefined);
 }
 
-NetworkTables.addDeletionListener(key => {
-  // console.log('entry deleted:', key);
-});
-
-document.addEventListener('DOMContentLoaded', async () => {
-  setDashboardTitle('Untitled Dashboard')
-  const provider = new NetworkTablesProvider();
-  const api = renderDashboard(document.querySelector('#dash'), provider, true);
-  window.FwcDashboard = {
-    addElements: api.addElements,
-    lit: api.lit,
-    NetworkTables,
-  };
-  document.querySelector('#loading')?.remove();
-  includeDialogs();
-  loadPlugins(preferences.plugins);
-  if (preferences.lastOpenedDashboard) {
-    openDashboard(preferences.lastOpenedDashboard, api);
-  }
-
+function addMainListeners(api) {
   ipcRenderer.on('ntModalOpen', () => {
     openNtDialog();
   });
@@ -92,5 +73,22 @@ document.addEventListener('DOMContentLoaded', async () => {
   ipcRenderer.on('newDashboard', () => {
     newDashboard(api);
   });
+}
 
+document.addEventListener('DOMContentLoaded', async () => {
+  setDashboardTitle('Untitled Dashboard')
+  const provider = new NetworkTablesProvider();
+  const api = renderDashboard(document.querySelector('#dash'), provider, true);
+  window.FwcDashboard = {
+    addElements: api.addElements,
+    lit: api.lit,
+    NetworkTables,
+  };
+  document.querySelector('#loading')?.remove();
+  includeDialogs();
+  loadPlugins(preferences.plugins);
+  if (preferences.lastOpenedDashboard) {
+    openDashboard(preferences.lastOpenedDashboard, api);
+  }
+  addMainListeners(api);
 });
