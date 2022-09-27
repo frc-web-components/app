@@ -4,14 +4,23 @@
 )]
 
 use chrono;
+use std::fs;
 use tauri::api::dialog;
 use tauri::{CustomMenuItem, Manager, Menu, MenuItem, Submenu};
-use std::fs;
+use std::fs::File;
+use std::io::Write;
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
 fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)
+}
+
+// Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
+#[tauri::command]
+fn save_file(path: &str, content: &str) {
+    let mut f = File::create(path).expect("Unable to create file");
+    f.write_all(content.as_bytes()).expect("Unable to write data");
 }
 
 fn main() {
@@ -79,9 +88,20 @@ fn main() {
                             let contents = fs::read_to_string(file_path)
                                 .expect("Should have been able to read the file");
                             println!("{contents}");
-                            event.window().emit("openDashboard", {
-                                contents
-                            }).unwrap();
+                            event.window().emit("openDashboard", contents ).unwrap();
+                            // println!("{}", file_path.clone());
+                        }
+                        _ => {}
+                    });
+            }
+            "save_dashboard_as" => {
+                dialog::FileDialogBuilder::default()
+                    .add_filter("HTML", &["html"])
+                    .save_file(move |path_buf| match path_buf {
+                        Some(p) => {
+                            // let mut data = String::new();
+                            let file_path = p.into_os_string().into_string().unwrap();
+                            event.window().emit("saveDashboardAs", file_path ).unwrap();
                             // println!("{}", file_path.clone());
                         }
                         _ => {}
@@ -97,6 +117,7 @@ fn main() {
             _ => {}
         })
         .invoke_handler(tauri::generate_handler![greet])
+        .invoke_handler(tauri::generate_handler![save_file])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
