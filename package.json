@@ -1,81 +1,23 @@
 {
-  "name": "frc-web-components",
-  "productName": "frc-web-components",
-  "version": "3.0.1",
-  "description": "Electron app for FRC Web Components dashboard",
-  "main": "src/main/index.js",
+  "name": "tauri-app",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
   "scripts": {
-    "start": "electron-forge start",
-    "package": "electron-forge package",
-    "make": "electron-forge make",
-    "publish": "electron-forge publish",
-    "lint": "echo \"No linting configured\""
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/frc-web-components/app.git"
-  },
-  "author": "Amory Galili",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/frc-web-components/app/issues"
-  },
-  "homepage": "https://github.com/frc-web-components/app#readme",
-  "config": {
-    "forge": {
-      "makers": [
-        {
-          "name": "@electron-forge/maker-squirrel",
-          "config": {
-            "name": "frc_web_components"
-          }
-        },
-        {
-          "name": "@electron-forge/maker-zip",
-          "platforms": [
-            "darwin"
-          ]
-        },
-        {
-          "name": "@electron-forge/maker-deb",
-          "config": {}
-        },
-        {
-          "name": "@electron-forge/maker-rpm",
-          "config": {}
-        }
-      ],
-      "publishers": [
-        {
-          "name": "@electron-forge/publisher-github",
-          "config": {
-            "repository": {
-              "owner": "frc-web-components",
-              "name": "app"
-            },
-            "prerelease": true
-          }
-        }
-      ]
-    }
-  },
-  "devDependencies": {
-    "@electron-forge/cli": "^6.0.0-beta.63",
-    "@electron-forge/maker-deb": "^6.0.0-beta.63",
-    "@electron-forge/maker-rpm": "^6.0.0-beta.63",
-    "@electron-forge/maker-squirrel": "^6.0.0-beta.63",
-    "@electron-forge/maker-zip": "^6.0.0-beta.63",
-    "@electron-forge/publisher-github": "^6.0.0-beta.63",
-    "electron": "^17.0.1"
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "tauri": "tauri"
   },
   "dependencies": {
-    "@electron/remote": "^2.0.5",
-    "@frc-web-components/components": "^3.0.0",
-    "@vaadin/vaadin": "^17.0.7",
-    "@webbitjs/store": "^4.0.2",
-    "electron-squirrel-startup": "^1.0.0",
-    "electron-store": "^8.0.1",
-    "lit": "^2.0.0-rc.2",
-    "node-ntcore": "^0.1.6"
+    "@frc-web-components/dashboard": "C:/Users/amory/Documents/repos/@frc-web-components/frc-web-components/packages/dashboard",
+    "@frc-web-components/frc-web-components": "C:/Users/amory/Documents/repos/@frc-web-components/frc-web-components/packages/frc-web-components",
+    "@frc-web-components/plugins": "C:/Users/amory/Documents/repos/@frc-web-components/frc-web-components/packages/plugins"
+  },
+  "devDependencies": {
+    "@tauri-apps/api": "^1.1.0",
+    "@tauri-apps/cli": "^1.1.0",
+    "typescript": "^4.8.2",
+    "vite": "^3.0.2"
   }
 }
