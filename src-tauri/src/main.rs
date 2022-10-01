@@ -5,10 +5,10 @@
 
 use chrono;
 use std::fs;
-use tauri::api::dialog;
-use tauri::{CustomMenuItem, Manager, Menu, MenuItem, Submenu};
 use std::fs::File;
 use std::io::Write;
+use tauri::api::dialog;
+use tauri::{CustomMenuItem, Manager, Menu, MenuItem, Submenu};
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
@@ -19,8 +19,32 @@ fn greet(name: &str) -> String {
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
 fn save_file(path: &str, content: &str) {
-    let mut f = File::create(path).expect("Unable to create file");
-    f.write_all(content.as_bytes()).expect("Unable to write data");
+    if path != "" {
+        let mut f = File::create(path).expect("Unable to create file");
+        f.write_all(content.as_bytes())
+            .expect("Unable to write data");
+    } else {
+        let content_copy: String = content.into();
+        dialog::FileDialogBuilder::default()
+            .add_filter("HTML", &["html"])
+            .save_file(move |path_buf| match path_buf {
+                Some(p) => {
+                    let file_path = p.into_os_string().into_string().unwrap();
+                    let mut f = File::create(file_path).expect("Unable to create file");
+                    f.write_all(content_copy.clone().as_bytes())
+                        .expect("Unable to write data");
+                    // event.window().emit("saveDashboardAs", file_path).unwrap();
+                }
+                _ => {}
+            });
+    }
+}
+
+// the payload type must implement `Serialize` and `Clone`.
+#[derive(Clone, serde::Serialize)]
+struct FilePayload {
+    path: String,
+    contents: String,
 }
 
 fn main() {
@@ -44,9 +68,9 @@ fn main() {
             .add_item(open_dashboard)
             .add_item(save_dashboard)
             .add_item(save_dashboard_as)
-            .add_native_item(MenuItem::Separator)
-            .add_item(settings)
-            .add_item(plugins)
+            // .add_native_item(MenuItem::Separator)
+            // .add_item(settings)
+            // .add_item(plugins)
             .add_native_item(MenuItem::Separator)
             .add_item(close)
             .add_item(quit),
@@ -85,11 +109,18 @@ fn main() {
                         Some(p) => {
                             // let mut data = String::new();
                             let file_path = p.into_os_string().into_string().unwrap();
-                            let contents = fs::read_to_string(file_path)
+                            let contents = fs::read_to_string(file_path.clone())
                                 .expect("Should have been able to read the file");
-                            println!("{contents}");
-                            event.window().emit("openDashboard", contents ).unwrap();
-                            // println!("{}", file_path.clone());
+                            event
+                                .window()
+                                .emit(
+                                    "openDashboard",
+                                    FilePayload {
+                                        path: file_path.clone(),
+                                        contents,
+                                    },
+                                )
+                                .unwrap();
                         }
                         _ => {}
                     });
@@ -99,13 +130,14 @@ fn main() {
                     .add_filter("HTML", &["html"])
                     .save_file(move |path_buf| match path_buf {
                         Some(p) => {
-                            // let mut data = String::new();
                             let file_path = p.into_os_string().into_string().unwrap();
-                            event.window().emit("saveDashboardAs", file_path ).unwrap();
-                            // println!("{}", file_path.clone());
+                            event.window().emit("saveDashboardAs", file_path).unwrap();
                         }
                         _ => {}
                     });
+            }
+            "save_dashboard" => {
+                event.window().emit("saveDashboard", "").unwrap();
             }
             "quit" => {
                 std::process::exit(0);
