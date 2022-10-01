@@ -1,2 +1,2 @@
 # app
-Electron app for FRC Web Components dashboard
+Tauri app for FRC Web Components dashboard
