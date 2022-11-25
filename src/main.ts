@@ -1,7 +1,40 @@
-import addPlugins from "@frc-web-components/plugins";
 import createDashboard from "@frc-web-components/frc-web-components";
 import { appWindow } from "@tauri-apps/api/window";
 import { invoke } from '@tauri-apps/api';
+import { BaseDirectory, createDir, writeFile, writeBinaryFile } from "@tauri-apps/api/fs";
+
+const createDataFolder = async () => {
+  try {
+    await createDir("data/bleh", {
+      dir: BaseDirectory.Desktop,
+      recursive: true,
+    });
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+const createDataFile = async () => {
+  try {
+    await writeFile(
+      {
+        contents: "[]",
+        path: `./data/bleh/data.json`,
+      },
+      {
+        dir: BaseDirectory.Desktop,
+      }
+    );
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+async function doStuff() {
+  await createDataFolder();
+  await createDataFile();
+}
+
 
 interface FilePayload {
   path: string;
@@ -25,8 +58,9 @@ window.addEventListener("DOMContentLoaded", async () => {
   setTitle();
 
   const dashboard = createDashboard(document.body);
-  addPlugins(dashboard);
   (window as any).dasboard = dashboard;
+
+  doStuff();
 
   appWindow.listen("newDashboard", () => {
     currentDashboardPath = '';
