@@ -7,7 +7,6 @@ module.exports = {
       output: process.stdout,
       terminal: false,
     });
-
     rl.on("line", function (line) {
       cb(line);
     });

@@ -15,7 +15,7 @@
       "all": true,
       "fs": {
         "all": true,
-        "scope": ["$APP/*", "$DESKTOP/*"]
+        "scope": ["$APP/*", "$DESKTOP/*", "$RESOURCE/*"]
       },
       "path": {
         "all": true

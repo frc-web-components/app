@@ -3,8 +3,8 @@
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
-const pagesPath = path.join(__dirname, "/cheatsheet");
-const cssPath = path.join(__dirname, "/stylesheet");
+const pagesPath = path.join(__dirname, "assets1");
+const cssPath = path.join(__dirname, "assets2");
 const port = process.env.PORT || 3000;
 
 module.exports = () => {
@@ -16,8 +16,8 @@ module.exports = () => {
     })
   );
 
-  app.use("/cheatsheet", express.static(pagesPath));
-  app.use("/stylesheet", express.static(cssPath));
+  app.use("/assets", express.static(pagesPath));
+  app.use("/assets", express.static(cssPath));
 
   app.get("/", (request, response) => {
     response.send("Hello CSS!!! " + __dirname);
