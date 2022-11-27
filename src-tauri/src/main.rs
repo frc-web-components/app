@@ -73,7 +73,7 @@ fn main() {
             .add_item(save_dashboard_as)
             // .add_native_item(MenuItem::Separator)
             // .add_item(settings)
-            // .add_item(plugins)
+            .add_item(plugins)
             .add_native_item(MenuItem::Separator)
             .add_item(close)
             .add_item(quit),
@@ -141,6 +141,9 @@ fn main() {
             }
             "save_dashboard" => {
                 event.window().emit("saveDashboard", "").unwrap();
+            }
+            "plugins" => {
+                event.window().emit("openPluginsDialog", "").unwrap();
             }
             "quit" => {
                 std::process::exit(0);

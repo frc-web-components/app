@@ -1,7 +1,8 @@
 import createDashboard from "@frc-web-components/frc-web-components";
 import { appWindow } from "@tauri-apps/api/window";
-import { invoke } from '@tauri-apps/api';
+import { invoke, event } from '@tauri-apps/api';
 import { BaseDirectory, createDir, writeFile, writeBinaryFile } from "@tauri-apps/api/fs";
+import './components/plugins-dialog';
 
 const createDataFolder = async () => {
   try {
@@ -60,7 +61,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   const dashboard = createDashboard(document.body);
   (window as any).dasboard = dashboard;
 
-  doStuff();
+  // doStuff();
 
   appWindow.listen("newDashboard", () => {
     currentDashboardPath = '';
