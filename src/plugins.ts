@@ -5,6 +5,7 @@ import {
   readTextFile,
 } from "@tauri-apps/api/fs";
 import { Command } from "@tauri-apps/api/shell";
+import { path } from "@tauri-apps/api";
 
 interface Plugin {
   directory: string;
@@ -46,12 +47,18 @@ export async function createPluginConfig(): Promise<void> {
 };
 
 export async function createPluginSidecar() {
-  const command = Command.sidecar("binaries/app");
+  const resourceDir = await path.resourceDir();
+  console.log('createPluginSidecar:', resourceDir);
+  const command = Command.sidecar("binaries/app", resourceDir);
+
   await command.spawn();
 
-  command.stdout.on("data", (line) => {
-    console.log("data:", line);
+  command.on('close', data => {
+    console.log(`command finished with code ${data.code} and signal ${data.signal}`)
   });
+  command.on('error', error => console.error(`command error: "${error}"`));
+  command.stdout.on('data', line => console.log(`command stdout: "${line}"`));
+  command.stderr.on('data', line => console.log(`command stderr: "${line}"`));
   // addMessage(frontendDiv, `command stdout: "${line}"`)
 }
 

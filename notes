@@ -19,3 +19,16 @@ https://github.com/tauri-apps/tauri/discussions/4331
 https://tauri.app/v1/guides/building/sidecar/
 
 sidecar example: https://github.com/tauri-apps/tauri/tree/dev/examples/sidecar
+
+
+Plugins TODO:
+=============
+- Create dialog for add plugins
+  - dialog has an add plugin button
+    - opens up a open folder dialog
+    - names the plugin after the folder
+  - existing dialogs are displayed in a list
+    - each item displays name of dialog, directory, and a button to remove the plugin
+- Need to be able to communicate between rust backend and sidecar
+  - rust needs to store plugin directories in some file and send to sidecar
+  - sidecar needs to serve plugins from these directories

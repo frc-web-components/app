@@ -6,7 +6,7 @@ const path = require("path");
 
 let server = null;
 
-export function getServer(plugins, port) {
+function getServer(plugins, port) {
   const app = express();
   app.use(
     cors({

@@ -1,7 +1,14 @@
 const { write, onMessage } = require("./communication");
-const launchServer = require('./server');
+const { startServer } = require('./server2');
+// const launchServer = require('./server');
 
-launchServer();
+// https://thisdavej.com/how-to-watch-for-files-changes-in-node-js/
+
+// launchServer();
+
+startServer();
+
+write("args: " + process.argv.join(','));
 
 onMessage((line) => {
   write(`read ${line}`);
