@@ -1,6 +1,5 @@
 const { write, onMessage } = require("./communication");
-const { startServer } = require('./server2');
-// const launchServer = require('./server');
+const { startServer } = require('./server');
 
 // https://thisdavej.com/how-to-watch-for-files-changes-in-node-js/
 
