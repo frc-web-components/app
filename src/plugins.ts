@@ -4,32 +4,45 @@ import {
   writeFile,
   readTextFile,
 } from "@tauri-apps/api/fs";
-import { Command } from "@tauri-apps/api/shell";
-import { path } from "@tauri-apps/api";
 
-interface Plugin {
+export interface Plugin {
   directory: string;
   name: string;
 }
 
-interface PluginConfig {
+export interface PluginConfig {
   plugins: Plugin[];
 }
 
-export async function getPlugins(): Promise<string> {
-  return readTextFile('./fwc-plugins/plugins.json', { dir: BaseDirectory.Resource })
+export async function getPlugins(): Promise<Plugin[]> {
+  return new Promise((resolve) => {
+    readTextFile("./fwc-plugins/plugins.json", {
+      dir: BaseDirectory.Resource,
+    })
+      .then((content) => {
+        try {
+          const pluginConfig: PluginConfig = JSON.parse(content);
+          resolve(pluginConfig.plugins);
+        } catch (e) {
+          console.error("error reading plugin config:", e);
+          resolve([{ directory: "", name: "" }]);
+        }
+      })
+      .catch(() => {
+        resolve([{ directory: "", name: "" }]);
+      });
+  });
 }
 
-export async function createPluginConfig(): Promise<void> {
+export async function writePluginConfig(plugins: Plugin[]): Promise<void> {
   try {
     await createDir("fwc-plugins", {
       dir: BaseDirectory.Resource,
       recursive: true,
     });
 
-
     const pluginConfig: PluginConfig = {
-      plugins: [{ directory: "", name: "" }],
+      plugins,
     };
 
     await writeFile(
@@ -44,22 +57,6 @@ export async function createPluginConfig(): Promise<void> {
   } catch (e) {
     console.error(e);
   }
-};
-
-export async function createPluginSidecar() {
-  const resourceDir = await path.resourceDir();
-  console.log('createPluginSidecar:', resourceDir);
-  const command = Command.sidecar("binaries/app", resourceDir);
-
-  await command.spawn();
-
-  command.on('close', data => {
-    console.log(`command finished with code ${data.code} and signal ${data.signal}`)
-  });
-  command.on('error', error => console.error(`command error: "${error}"`));
-  command.stdout.on('data', line => console.log(`command stdout: "${line}"`));
-  command.stderr.on('data', line => console.log(`command stderr: "${line}"`));
-  // addMessage(frontendDiv, `command stdout: "${line}"`)
 }
 
 export async function getFile(path: string): Promise<Response> {

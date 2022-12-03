@@ -4,17 +4,16 @@
 )]
 
 use chrono;
-use tauri::PathResolver;
 use std::fs;
 use std::fs::File;
 use std::io::Write;
 use tauri::api::dialog;
+use tauri::PathResolver;
 use tauri::{
+    api::path,
     api::process::{Command, CommandEvent},
-    api::{path},
     CustomMenuItem, Manager, Menu, MenuItem, Submenu,
 };
-
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
@@ -45,6 +44,16 @@ fn save_file(path: &str, content: &str) {
             });
     }
 }
+
+// #[tauri::command]
+// fn load_plugin() {
+//     dialog::FileDialogBuilder::default().pick_folder(|path_buf| match path_buf {
+//         Some(p) => {
+//             let folder_path = p.into_os_string().into_string().unwrap();
+//         }
+//         _ => {}
+//     });
+// }
 
 // the payload type must implement `Serialize` and `Clone`.
 #[derive(Clone, serde::Serialize)]
@@ -160,7 +169,8 @@ fn main() {
         .invoke_handler(tauri::generate_handler![greet])
         .invoke_handler(tauri::generate_handler![save_file])
         .setup(|app| {
-            let resource_path = app.path_resolver()
+            let resource_path = app
+                .path_resolver()
                 .resource_dir()
                 .unwrap()
                 .into_os_string()
