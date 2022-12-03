@@ -1,14 +1,16 @@
 const http = require("http");
 const { readFile, existsSync } = require("fs");
 const path = require("path");
+const { getAssetPaths } = require('./plugins');
 
-const pagesPath = path.join(__dirname, "assets1");
-const cssPath = path.join(__dirname, "assets2");
+// const pagesPath = path.join(__dirname, "assets1");
+// const cssPath = path.join(__dirname, "assets2");
 
-let staticAssetPaths = [pagesPath, cssPath];
+// let staticAssetPaths = [pagesPath, cssPath];
 
-function getFilePath(relativePath) {
-  for (let rootPath of staticAssetPaths) {
+async function getFilePath(relativePath) {
+  const assetPaths = await getAssetPaths();
+  for (let rootPath of assetPaths) {
     const fullPath = path.join(rootPath, relativePath);
     if (existsSync(fullPath)) {
       return fullPath;
@@ -59,10 +61,10 @@ function updateStaticAssetPaths(assetPaths) {
   staticAssetPaths = assetPaths;
 }
 
-function serveStaticAsset(request, response) {
+async function serveStaticAsset(request, response) {
   const relativePath = request.url.substring(7);
   console.log('relativePath:', relativePath);
-  const filePath = getFilePath(relativePath);
+  const filePath = await getFilePath(relativePath);
   if (!filePath) {
     response.writeHead(404);
     response.end("", "utf-8");

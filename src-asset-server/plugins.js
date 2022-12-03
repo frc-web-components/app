@@ -5,12 +5,13 @@ const pluginsDir = process.argv[process.argv.length - 1];
 const pluginConfigPath = join(pluginsDir, "fwc-plugins/plugins.json");
 let pluginConfig = null;
 
+console.log('pluginConfigPath:', pluginConfigPath);
+
 function getDefaultPluginConfig() {
   return {
     plugins: [{ directory: "", name: "" }],
   };
 }
-
 
 function writePluginConfig(config) {
   return new Promise((resolve, reject) => {
@@ -46,6 +47,10 @@ async function getPluginConfig() {
 async function updateConfig() {
   pluginConfig = await getPluginConfig();
 }
+
+watchFile(pluginConfigPath, () => {
+  updateConfig();
+});
 
 async function getAssetPaths() {
   if (!pluginConfig) {
