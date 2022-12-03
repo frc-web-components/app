@@ -1,3 +1,4 @@
+import { FrcDashboard } from "@frc-web-components/frc-web-components/types/dashboard";
 import {
   BaseDirectory,
   createDir,
@@ -59,6 +60,18 @@ export async function writePluginConfig(plugins: Plugin[]): Promise<void> {
   }
 }
 
-export async function getFile(path: string): Promise<Response> {
-  return fetch(`/assets/${path}`);
+export async function getAsset(path: string): Promise<Response> {
+  return fetch(`http://localhost:8125/assets/${path}`);
+}
+
+
+export async function loadPlugins(dashboard: FrcDashboard) {
+  const plugins = await getPlugins();
+  plugins.forEach((_, index) => {
+    import(`http://localhost:8125/plugins/${index}`).then(pluginExports => {
+      console.log('pluginExports:', pluginExports, pluginExports?.default);
+      pluginExports?.default?.(dashboard);
+
+    });
+  }); 
 }

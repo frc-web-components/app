@@ -3,18 +3,26 @@ const { readFile, existsSync } = require("fs");
 const path = require("path");
 const { getAssetPaths } = require('./plugins');
 
-// const pagesPath = path.join(__dirname, "assets1");
-// const cssPath = path.join(__dirname, "assets2");
-
-// let staticAssetPaths = [pagesPath, cssPath];
-
 async function getFilePath(relativePath) {
   const assetPaths = await getAssetPaths();
   for (let rootPath of assetPaths) {
-    const fullPath = path.join(rootPath, relativePath);
+    const fullPath = path.join(rootPath, 'assets', relativePath);
     if (existsSync(fullPath)) {
       return fullPath;
     }
+  }
+  return undefined;
+}
+
+async function getPluginFilePath(assetIndex) {
+  const assetPaths = await getAssetPaths();
+  const assetPath = assetPaths[assetIndex];
+  if (!assetPath) {
+    return undefined;
+  }
+  const fullPath = path.join(assetPath, 'index.js');
+  if (existsSync(fullPath)) {
+    return fullPath;
   }
   return undefined;
 }
@@ -61,17 +69,13 @@ function updateStaticAssetPaths(assetPaths) {
   staticAssetPaths = assetPaths;
 }
 
-async function serveStaticAsset(request, response) {
-  const relativePath = request.url.substring(7);
-  console.log('relativePath:', relativePath);
-  const filePath = await getFilePath(relativePath);
+async function serverFile(filePath, request, response) {
   if (!filePath) {
     response.writeHead(404);
     response.end("", "utf-8");
     return;
   }
   const contentType = getContentType(filePath);
-  console.log("request:", request.url, filePath);
 
   readFile(filePath, function (error, content) {
     if (error) {
@@ -94,12 +98,25 @@ async function serveStaticAsset(request, response) {
   });
 }
 
+async function serveStaticAsset(request, response) {
+  const relativePath = request.url.substring(7);
+  const filePath = await getFilePath(relativePath);
+  serverFile(filePath, request, response);
+}
+async function servePlugin(request, response) {
+  const pluginIndex = parseInt(request.url.substring(9));
+  const filePath = await getPluginFilePath(pluginIndex);
+  serverFile(filePath, request, response);
+}
+
 function startServer() {
   http
     .createServer(function (request, response) {
       addCorsHeaders(response);
       if (request.url.startsWith("/assets/")) {
         serveStaticAsset(request, response);
+      } else if (request.url.startsWith("/plugins/")) {
+        servePlugin(request, response);
       } else {
         response.writeHead(404);
         response.end("", "utf-8");

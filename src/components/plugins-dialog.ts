@@ -1,6 +1,6 @@
 /* eslint-disable import/extensions */
 import { LitElement, html, TemplateResult, render } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
+import { customElement, state } from "lit/decorators.js";
 import { guard } from "lit/directives/guard.js";
 import './plugins-dialog-body';
 import { appWindow } from "@tauri-apps/api/window";

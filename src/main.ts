@@ -2,7 +2,7 @@ import createDashboard from "@frc-web-components/frc-web-components";
 import { appWindow } from "@tauri-apps/api/window";
 import { invoke } from "@tauri-apps/api";
 import "./components/plugins-dialog";
-import { writePluginConfig, getPlugins } from "./plugins";
+import { writePluginConfig, getPlugins, loadPlugins } from "./plugins";
 
 interface FilePayload {
   path: string;
@@ -25,13 +25,14 @@ function setTitle(title?: string) {
 window.addEventListener("DOMContentLoaded", async () => {
   (window as any).writePluginConfig = writePluginConfig;
   (window as any).getPlugins = getPlugins;
-
+  
   let currentDashboardPath: string = "";
-
+  
   setTitle();
-
+  
   const dashboard = createDashboard(document.body);
-  (window as any).dasboard = dashboard;
+  (window as any).dashboard = dashboard;
+  (window as any).loadPlugins = () => loadPlugins(dashboard);
 
   // doStuff();
 
