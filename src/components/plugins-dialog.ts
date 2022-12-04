@@ -13,7 +13,6 @@ export class DashboardPluginsDialog extends LitElement {
   firstUpdated() {
     appWindow.listen("openPluginsDialog", () => {
       this.dialogOpened = true;
-      console.log('...');
     });
   }
  

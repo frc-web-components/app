@@ -32,13 +32,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   
   const dashboard = createDashboard(document.body);
   (window as any).dashboard = dashboard;
-  (window as any).loadPlugins = () => loadPlugins(dashboard);
-
-  // doStuff();
-
-  if (appWindow.label === "main") {
-    // createPluginSidecar();
-  }
+  loadPlugins(dashboard);
 
   appWindow.listen("newDashboard", () => {
     currentDashboardPath = "";
