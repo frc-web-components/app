@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "FRC Web Components",
-    "version": "0.0.1"
+    "version": "0.0.2"
   },
   "tauri": {
     "allowlist": {
@@ -75,7 +75,8 @@
         "height": 700,
         "resizable": true,
         "title": "FRC Web Components",
-        "width": 1200
+        "width": 1200,
+        "fileDropEnabled": false
       }
     ]
   }
