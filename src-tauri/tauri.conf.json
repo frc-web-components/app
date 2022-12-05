@@ -8,14 +8,28 @@
   },
   "package": {
     "productName": "FRC Web Components",
-    "version": "0.0.3"
+    "version": "0.0.4"
   },
   "tauri": {
     "allowlist": {
       "all": true,
+      "dialog": {
+        "ask": true,
+        "confirm": true,
+        "message": true,
+        "open": true,
+        "save": true
+      },
       "fs": {
-        "all": true,
-        "scope": ["$APP/*", "$DESKTOP/*", "$RESOURCE/*"]
+        "scope": ["$APP/*", "$DESKTOP/*", "$CONFIG/fwc-plugins/*", "$CONFIG/fwc-plugins"],
+        "createDir": true,
+        "exists": true,
+        "readDir": true,
+        "readFile": true,
+        "removeDir": true,
+        "removeFile": true,
+        "renameFile": true,
+        "writeFile": true
       },
       "path": {
         "all": true

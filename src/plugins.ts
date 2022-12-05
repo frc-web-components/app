@@ -18,7 +18,7 @@ export interface PluginConfig {
 export async function getPlugins(): Promise<Plugin[]> {
   return new Promise((resolve) => {
     readTextFile("./fwc-plugins/plugins.json", {
-      dir: BaseDirectory.Resource,
+      dir: BaseDirectory.Config,
     })
       .then((content) => {
         try {
@@ -38,7 +38,7 @@ export async function getPlugins(): Promise<Plugin[]> {
 export async function writePluginConfig(plugins: Plugin[]): Promise<void> {
   try {
     await createDir("fwc-plugins", {
-      dir: BaseDirectory.Resource,
+      dir: BaseDirectory.Config,
       recursive: true,
     });
 
@@ -52,7 +52,7 @@ export async function writePluginConfig(plugins: Plugin[]): Promise<void> {
         path: `./fwc-plugins/plugins.json`,
       },
       {
-        dir: BaseDirectory.Resource,
+        dir: BaseDirectory.Config,
       }
     );
   } catch (e) {

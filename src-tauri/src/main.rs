@@ -169,9 +169,7 @@ fn main() {
         .invoke_handler(tauri::generate_handler![greet])
         .invoke_handler(tauri::generate_handler![save_file])
         .setup(|app| {
-            let resource_path = app
-                .path_resolver()
-                .resource_dir()
+            let config_path = path::config_dir()
                 .unwrap()
                 .into_os_string()
                 .into_string()
@@ -180,7 +178,7 @@ fn main() {
             tauri::async_runtime::spawn(async move {
                 let (mut rx, mut child) = Command::new_sidecar("app")
                     .expect("failed to setup `app` sidecar")
-                    .args([&resource_path])
+                    .args([&config_path])
                     .spawn()
                     .expect("Failed to spawn packaged node");
 
