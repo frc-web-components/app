@@ -2,7 +2,7 @@
 import { html, css, LitElement, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import { open } from "@tauri-apps/api/dialog";
-import { appDir } from "@tauri-apps/api/path";
+import { desktopDir } from "@tauri-apps/api/path";
 import { Plugin, writePluginConfig, getPlugins } from "../plugins";
 
 @customElement("dashboard-plugins-dialog-body")
@@ -80,10 +80,9 @@ export class PluginsDialogBody extends LitElement {
   }
 
   private async onLoadPlugin() {
-    // invoke("load_plugin");
     const selected = await open({
       directory: true,
-      defaultPath: await appDir(),
+      defaultPath: await desktopDir(),
     });
     if (!Array.isArray(selected) && selected !== null) {
       let plugins = await getPlugins();
