@@ -1,4 +1,4 @@
-import { FrcDashboard } from "@frc-web-components/frc-web-components/types/dashboard";
+import { FrcDashboard } from "@frc-web-components/fwc";
 import {
   BaseDirectory,
   createDir,

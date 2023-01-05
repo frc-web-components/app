@@ -8,12 +8,15 @@ use std::fs;
 use std::fs::File;
 use std::io::Write;
 use tauri::api::dialog;
-use tauri::PathResolver;
 use tauri::{
     api::path,
     api::process::{Command, CommandEvent},
     CustomMenuItem, Manager, Menu, MenuItem, Submenu,
 };
+
+mod plugins;
+
+use crate::plugins::Config;
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]

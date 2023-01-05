@@ -1,4 +1,4 @@
-import createDashboard from "@frc-web-components/frc-web-components";
+import createDashboard from "@frc-web-components/fwc";
 import { appWindow } from "@tauri-apps/api/window";
 import { invoke } from "@tauri-apps/api";
 import "./components/plugins-dialog";
