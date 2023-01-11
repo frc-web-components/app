@@ -13,10 +13,13 @@ use tauri::{
     api::process::{Command, CommandEvent},
     CustomMenuItem, Manager, Menu, MenuItem, Submenu,
 };
+use tokio::runtime::Runtime;
 
 mod plugins;
+mod server;
 
 use crate::plugins::Config;
+use crate::server::start_server;
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
@@ -65,7 +68,8 @@ struct FilePayload {
     contents: String,
 }
 
-fn main() {
+#[tokio::main]
+async fn main() {
     // here `"quit".to_string()` defines the menu item id, and the second parameter is the menu item label.
     let new_dashboard = CustomMenuItem::new("new_dashboard".to_string(), "New Dashboard");
     let new_window = CustomMenuItem::new("new_window".to_string(), "New Window");
@@ -97,6 +101,14 @@ fn main() {
         // .add_native_item(MenuItem::Copy)
         // .add_item(CustomMenuItem::new("hide", "Hide"))
         .add_submenu(submenu);
+
+    // Create a new runtime
+    let mut rt = Runtime::new().unwrap();
+
+    rt.spawn(async {
+        start_server().await;
+    });
+
     let app = tauri::Builder::default();
     // let newDashboardHandler = app.tauri::generate_handler![greet]
     app.menu(menu)
@@ -194,7 +206,7 @@ fn main() {
                             .expect("failed to emit event");
                         i += 1;
                         if i == 4 {
-                            child.write("message from Rust\n".as_bytes()).unwrap();
+                            // child.write("message from Rust\n".as_bytes()).unwrap();
                             i = 0;
                         }
                     }

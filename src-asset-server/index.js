@@ -14,5 +14,5 @@ onMessage((line) => {
 });
 
 setInterval(() => {
-  write(`[${new Date().toLocaleTimeString()}] new message`);
+  // write(`[${new Date().toLocaleTimeString()}] new message`);
 }, 500);

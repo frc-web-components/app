@@ -1,6 +1,5 @@
 use notify::{RecursiveMode, Watcher};
 use serde::{Deserialize, Serialize};
-use serde_json::Result;
 use std::fs::File;
 use std::io::Write;
 use std::path::Path;
@@ -48,7 +47,8 @@ impl Config {
         // Automatically select the best implementation for your platform.
         let mut watcher = notify::recommended_watcher(move|res| match res {
             Ok(event) => {
-              self.should_update = true;
+              // println!("{}", self.should_update);
+              // self.should_update = true;
             },
             Err(e) => println!("watch error: {:?}", e)
         })?;
@@ -88,9 +88,10 @@ impl Config {
     }
 
     pub fn get_asset_paths(&mut self) -> Vec<String> {
-        if self.should_update {
-            self.read();
-        }
+        // if self.should_update {
+        //     self.read();
+        // }
+        self.read();
         self.plugins.iter().map(|a| a.directory.clone()).collect()
     }
 }
