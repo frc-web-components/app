@@ -12,8 +12,7 @@ fn get_plugin_dir() -> PathBuf {
         .into_os_string()
         .into_string()
         .unwrap();
-    let dir_path = Path::new(&config_path).join("fwc-plugins");
-    dir_path.join("plugins.json")
+    Path::new(&config_path).join("fwc-plugins")
 }
 
 fn get_plugins_path() -> PathBuf {
@@ -21,23 +20,23 @@ fn get_plugins_path() -> PathBuf {
     dir_path.join("plugins.json")
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Plugin {
     pub directory: String,
     pub name: String,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Config {
     plugins: Vec<Plugin>,
-    should_update: bool,
+    // should_update: bool,
 }
 
 impl Config {
     pub fn new() -> Config {
         let mut config = Config {
             plugins: vec![],
-            should_update: false,
+            // should_update: false,
         };
         config.read();
         config
@@ -74,6 +73,7 @@ impl Config {
 
     fn read(&mut self) -> std::io::Result<()> {
         let exists = Path::new(get_plugins_path().as_path()).exists();
+        
         if !exists {
             self.write()?
         }
