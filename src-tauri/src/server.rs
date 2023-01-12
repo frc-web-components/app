@@ -4,7 +4,7 @@ use hyper::StatusCode;
 use hyper::{Body, Request, Response, Server};
 use std::convert::Infallible;
 use std::path::Path;
-use std::{fs, path::PathBuf};
+use std::{fs};
 
 mod plugins;
 

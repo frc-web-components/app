@@ -3,18 +3,11 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "bin": "src-asset-server/index.js",
-  "pkg": {
-    "assets": [
-      "src-asset-server/**/*"
-    ]
-  },
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "tauri": "tauri",
-    "package": "pkg package.json --output src-tauri/binaries/app && node scripts/move-binaries.js"
+    "tauri": "tauri"
   },
   "dependencies": {
     "@frc-web-components/fwc": "1.0.2",
