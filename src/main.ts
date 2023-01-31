@@ -1,6 +1,6 @@
 import createDashboard from "@frc-web-components/fwc";
 import { appWindow } from "@tauri-apps/api/window";
-import { invoke } from "@tauri-apps/api";
+import { invoke, dialog } from "@tauri-apps/api";
 import "./components/plugins-dialog";
 import { writePluginConfig, getPlugins, loadPlugins } from "./plugins";
 
@@ -25,11 +25,11 @@ function setTitle(title?: string) {
 window.addEventListener("DOMContentLoaded", async () => {
   (window as any).writePluginConfig = writePluginConfig;
   (window as any).getPlugins = getPlugins;
-  
+
   let currentDashboardPath: string = "";
-  
+
   setTitle();
-  
+
   const dashboard = createDashboard(document.body);
   (window as any).dashboard = dashboard;
   loadPlugins(dashboard);
@@ -54,7 +54,17 @@ window.addEventListener("DOMContentLoaded", async () => {
     setTitle(currentDashboardPath);
   });
 
-  appWindow.listen("saveDashboard", () => {
+  appWindow.listen("saveDashboard", async () => {
+    if (!currentDashboardPath) {
+      const path = await dialog.save({
+        filters: [{ name: "HTML", extensions: ["html"] }],
+      });
+      if (!path) {
+        return;
+      }
+      currentDashboardPath = path;
+      setTitle(currentDashboardPath);
+    }
     invoke("save_file", {
       path: currentDashboardPath,
       content: dashboard.getHtml(),
