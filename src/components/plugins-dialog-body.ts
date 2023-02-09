@@ -4,6 +4,7 @@ import { customElement, state } from "lit/decorators.js";
 import { open } from "@tauri-apps/api/dialog";
 import { desktopDir } from "@tauri-apps/api/path";
 import { Plugin, writePluginConfig, getPlugins } from "../plugins";
+import { basename } from "@tauri-apps/api/path";
 
 @customElement("dashboard-plugins-dialog-body")
 export class PluginsDialogBody extends LitElement {
@@ -41,7 +42,6 @@ export class PluginsDialogBody extends LitElement {
     .plugins {
       display: flex;
       flex-direction: column;
-      padding: 10px 15px;
     }
 
     .plugin {
@@ -63,6 +63,49 @@ export class PluginsDialogBody extends LitElement {
 
     vaadin-button {
       cursor: pointer;
+    }
+
+    table {
+      border-collapse: collapse;
+      font-size: 0.9em;
+      font-family: sans-serif;
+      min-width: 400px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    }
+
+    table thead tr {
+      background-color: #555;
+      color: #ffffff;
+      text-align: left;
+    }
+
+    table th {
+      text-align: left;
+    }
+
+    table th,
+    table td {
+      padding: 6px 12px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+
+    table th.directory, table td.directory {
+      max-width: 200px;
+    }
+
+    table tbody tr {
+      border-bottom: 1px solid #dddddd;
+    }
+
+    table tbody tr:nth-of-type(even) {
+      background-color: #f3f3f3;
+    }
+
+    table tbody tr.active-row {
+      font-weight: bold;
+      color: #009879;
     }
   `;
 
@@ -86,9 +129,10 @@ export class PluginsDialogBody extends LitElement {
     });
     if (!Array.isArray(selected) && selected !== null) {
       let plugins = await getPlugins();
+
       plugins = plugins.concat({
         directory: selected,
-        name: `Plugin ${plugins.length + 1}`,
+        name: await basename(selected),
       });
       await writePluginConfig(plugins);
       this.plugins = plugins;
@@ -103,6 +147,11 @@ export class PluginsDialogBody extends LitElement {
   }
 
   render(): TemplateResult {
+    console.log(
+      "plugins:",
+      this.plugins.map((plugin) => basename(plugin.directory))
+    );
+
     return html`
       <header
         style="border-bottom: 1px solid var(--lumo-contrast-10pct); padding: var(--lumo-space-m) var(--lumo-space-l);"
@@ -114,24 +163,40 @@ export class PluginsDialogBody extends LitElement {
         </h2>
       </header>
       <div class="plugins">
-        ${this.plugins.length === 0
-          ? html` <p style="direction: ltr; padding-left: 10px">
-              No plugins loaded
-            </p>`
-          : null}
-        ${this.plugins.map(
-          (plugin, index) => html`
-            <div class="plugin">
-              <p>${plugin.directory}</p>
-              <vaadin-button
-                theme="icon tertiary error"
-                @click=${() => this.removePlugin(index)}
-              >
-                <vaadin-icon icon="vaadin:close"></vaadin-icon>
-              </vaadin-button>
-            </div>
-          `
-        )}
+        <table>
+          <thead>
+            <tr>
+              <th class="name">Name</th>
+              <th class="directory">Location</th>
+              <th class="version">Version</th>
+              <th class="remove"></th>
+            </tr>
+          </thead>
+          <tbody>
+            ${this.plugins.length === 0
+              ? html` <p style="direction: ltr; padding-left: 10px">
+                  No plugins loaded
+                </p>`
+              : null}
+            ${this.plugins.map(
+              (plugin, index) => html`
+                <tr>
+                  <td class="name">${plugin.name}</td>
+                  <td class="directory" title=${plugin.directory}>${plugin.directory}</td>
+                  <td class="version">1.0</td>
+                  <td class="remove">
+                    <vaadin-button
+                      theme="icon tertiary error"
+                      @click=${() => this.removePlugin(index)}
+                    >
+                      <vaadin-icon icon="vaadin:close"></vaadin-icon>
+                    </vaadin-button>
+                  </td>
+                </tr>
+              `
+            )}
+          </tbody>
+        </table>
       </div>
       <footer
         style="padding: 10px 20px; display: flex; justify-content: end; gap: 10px;"
