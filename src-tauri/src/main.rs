@@ -75,7 +75,7 @@ async fn main() {
     let save_dashboard_as =
         CustomMenuItem::new("save_dashboard_as".to_string(), "Save Dashboard As...");
     let settings = CustomMenuItem::new("settings".to_string(), "Settings");
-    let plugins = CustomMenuItem::new("plugins".to_string(), "Manage Plugins");
+    let plugins = CustomMenuItem::new("plugins".to_string(), "Plugins");
     let close = CustomMenuItem::new("close".to_string(), "Close Window");
     let quit = CustomMenuItem::new("quit".to_string(), "Quit");
     let submenu = Submenu::new(
@@ -89,6 +89,7 @@ async fn main() {
             .add_item(save_dashboard_as)
             // .add_native_item(MenuItem::Separator)
             // .add_item(settings)
+            .add_native_item(MenuItem::Separator)
             .add_item(plugins)
             .add_native_item(MenuItem::Separator)
             .add_item(close)
