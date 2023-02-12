@@ -3,12 +3,19 @@ import { html, css, LitElement, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import { open } from "@tauri-apps/api/dialog";
 import { desktopDir } from "@tauri-apps/api/path";
-import { Plugin, writePluginConfig, getPlugins } from "../plugins";
+import {
+  Plugin,
+  writePluginConfig,
+  getPlugins,
+  getPluginInfo,
+  PluginInfo,
+} from "../plugins";
 import { basename } from "@tauri-apps/api/path";
 
 @customElement("dashboard-plugins-dialog-body")
 export class PluginsDialogBody extends LitElement {
   @state() plugins: Plugin[] = [];
+  @state() pluginInfo: PluginInfo = {};
 
   static styles = css`
     :host {
@@ -91,7 +98,8 @@ export class PluginsDialogBody extends LitElement {
       overflow: hidden;
     }
 
-    table th.directory, table td.directory {
+    table th.directory,
+    table td.directory {
       max-width: 200px;
     }
 
@@ -120,6 +128,8 @@ export class PluginsDialogBody extends LitElement {
 
   async firstUpdated() {
     this.plugins = await getPlugins();
+    console.log("???");
+    this.pluginInfo = await getPluginInfo();
   }
 
   private async onLoadPlugin() {
@@ -178,12 +188,18 @@ export class PluginsDialogBody extends LitElement {
                   No plugins loaded
                 </p>`
               : null}
-            ${this.plugins.map(
-              (plugin, index) => html`
+            ${this.plugins.map((plugin, index) => {
+              const info = this.pluginInfo[plugin.directory];
+              const name = info?.name ?? 'N/A';
+              const version = info?.version ?? 'N/A';
+              const directory = plugin.directory;
+              return html`
                 <tr>
-                  <td class="name">${plugin.name}</td>
-                  <td class="directory" title=${plugin.directory}>${plugin.directory}</td>
-                  <td class="version">1.0</td>
+                  <td class="name">${name}</td>
+                  <td class="directory" title=${directory}>
+                    ${directory}
+                  </td>
+                  <td class="version">${version}</td>
                   <td class="remove">
                     <vaadin-button
                       theme="icon tertiary error"
@@ -193,8 +209,8 @@ export class PluginsDialogBody extends LitElement {
                     </vaadin-button>
                   </td>
                 </tr>
-              `
-            )}
+              `;
+            })}
           </tbody>
         </table>
       </div>

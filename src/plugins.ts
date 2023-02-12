@@ -15,6 +15,14 @@ export interface PluginConfig {
   plugins: Plugin[];
 }
 
+export interface PluginInfo {
+  [directory: string]: null | {
+    name: string | null;
+    description: string | null;
+    version: string | null;
+  };
+}
+
 export async function getPlugins(): Promise<Plugin[]> {
   return new Promise((resolve) => {
     readTextFile("./fwc-plugins/plugins.json", {
@@ -69,15 +77,26 @@ export async function loadPlugins(dashboard: FrcDashboard) {
   plugins.forEach((value, index) => {
     import(`http://localhost:8125/plugins/${index}`)
       .then((pluginExports) => {
-        console.log('pluginExports:', pluginExports, pluginExports?.default);
+        console.log("pluginExports:", pluginExports, pluginExports?.default);
         try {
           pluginExports?.default?.(dashboard);
-        } catch(error) {
-          console.error(`Error executing plugin with path "${value.directory}":`, error);
+        } catch (error) {
+          console.error(
+            `Error executing plugin with path "${value.directory}":`,
+            error
+          );
         }
       })
       .catch((error) => {
-        console.error(`Failed to load plugin with path "${value.directory}":`, error);
+        console.error(
+          `Failed to load plugin with path "${value.directory}":`,
+          error
+        );
       });
   });
+}
+export async function getPluginInfo() {
+  const response = await fetch("http://localhost:8125/plugin-info");
+  const pluginInfo: PluginInfo = await response.json();
+  return pluginInfo;
 }

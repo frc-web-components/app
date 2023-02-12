@@ -1,7 +1,7 @@
-use notify::{RecursiveMode, Watcher};
 use serde::{Deserialize, Serialize};
 use std::fs::File;
 use std::io::Write;
+use std::collections::HashMap;
 use std::path::Path;
 use std::{fs, path::PathBuf};
 use tauri::api;
@@ -29,7 +29,13 @@ pub struct Plugin {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Config {
     plugins: Vec<Plugin>,
-    // should_update: bool,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct Info {
+    pub name: Option<String>,
+    pub version: Option<String>,
+    pub description: Option<String>
 }
 
 impl Config {
@@ -40,23 +46,6 @@ impl Config {
         };
         config.read();
         config
-    }
-
-    fn watch(&mut self) -> notify::Result<()> {
-        // Automatically select the best implementation for your platform.
-        let mut watcher = notify::recommended_watcher(move|res| match res {
-            Ok(event) => {
-              // println!("{}", self.should_update);
-              // self.should_update = true;
-            },
-            Err(e) => println!("watch error: {:?}", e)
-        })?;
-
-        // Add a path to be watched. All files and directories at that path and
-        // below will be monitored for changes.
-        watcher.watch(&get_plugins_path(), RecursiveMode::NonRecursive)?;
-
-        Ok(())
     }
 
     fn write(&self) -> std::io::Result<()> {
@@ -87,10 +76,24 @@ impl Config {
         }
     }
 
+    pub fn get_plugin_info(&mut self) -> HashMap<String, Option<Info>> {
+        let mut plugin_info = HashMap::new();
+        let asset_paths = self.get_asset_paths();
+
+        asset_paths.iter().for_each(|path| {
+            let plugin_json_path = Path::new(path).join("plugin.json");
+            if let Ok(contents) = fs::read_to_string(plugin_json_path) {
+                if let Ok(info) = serde_json::from_str::<Info>(&contents) {
+                    plugin_info.insert(path.clone(), Some(info));
+                } else {
+                    plugin_info.insert(path.clone(), None);
+                }
+            }
+        });
+        return plugin_info;
+    }
+
     pub fn get_asset_paths(&mut self) -> Vec<String> {
-        // if self.should_update {
-        //     self.read();
-        // }
         self.read();
         self.plugins.iter().map(|a| a.directory.clone()).collect()
     }

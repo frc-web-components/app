@@ -2,9 +2,10 @@ use hyper::header::HeaderValue;
 use hyper::service::{make_service_fn, service_fn};
 use hyper::StatusCode;
 use hyper::{Body, Request, Response, Server};
+use serde::{Deserialize, Serialize};
 use std::convert::Infallible;
+use std::fs;
 use std::path::Path;
-use std::{fs};
 
 mod plugins;
 
@@ -14,7 +15,7 @@ fn get_file_path<'a>(relative_path: &'a str, config: &'a mut Config) -> Option<S
     let asset_paths = config.get_asset_paths();
     for root_path in asset_paths {
         let full_path = Path::new(&root_path).join("assets").join(relative_path);
-        
+
         if full_path.exists() {
             return full_path.to_str().map(|s| s.to_string());
         }
@@ -114,7 +115,7 @@ fn serve_plugin(request: &Request<Body>, response: &mut Response<Body>, config: 
         *response.body_mut() = Body::from("");
         return;
     }
-    
+
     let plugin_index = relative_path.as_ref().unwrap();
     let file_path = get_plugin_file_path(*plugin_index, config);
     match file_path {
@@ -128,7 +129,19 @@ fn serve_plugin(request: &Request<Body>, response: &mut Response<Body>, config: 
     }
 }
 
-async fn hello(request: Request<Body>) -> Result<Response<Body>, Infallible> {
+fn serve_plugin_info(request: &Request<Body>, response: &mut Response<Body>, config: &mut Config) {
+    let plugin_info = config.get_plugin_info();
+    if let Ok(value) = serde_json::to_string(&plugin_info) {
+        *response.status_mut() = StatusCode::OK;
+        *response.body_mut()  = Body::from(value.clone());
+    } else {
+        *response.status_mut() = StatusCode::NOT_FOUND;
+        *response.body_mut() = Body::from("");
+    }
+    // Body::from("");
+}
+
+async fn get_response(request: Request<Body>) -> Result<Response<Body>, Infallible> {
     let mut config: Config = Config::new();
     let mut response = Response::new(Body::from(""));
     add_cors_headers(&mut response);
@@ -137,6 +150,8 @@ async fn hello(request: Request<Body>) -> Result<Response<Body>, Infallible> {
         serve_static_asset(&request, &mut response, &mut config);
     } else if uri.starts_with("/plugins/") {
         serve_plugin(&request, &mut response, &mut config);
+    } else if uri.starts_with("/plugin-info") {
+        serve_plugin_info(&request, &mut response, &mut config);
     } else {
         *response.status_mut() = StatusCode::NOT_FOUND;
         *response.body_mut() = Body::from("");
@@ -147,7 +162,7 @@ async fn hello(request: Request<Body>) -> Result<Response<Body>, Infallible> {
 pub async fn start_server() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let addr = ([127, 0, 0, 1], 8125).into();
 
-    let make_service = make_service_fn(|_| async { Ok::<_, Infallible>(service_fn(hello)) });
+    let make_service = make_service_fn(|_| async { Ok::<_, Infallible>(service_fn(get_response)) });
 
     let server = Server::bind(&addr).serve(make_service);
 
