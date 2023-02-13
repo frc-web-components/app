@@ -176,7 +176,6 @@ export class PluginsDialogBody extends LitElement {
     const name = info?.name ?? "N/A";
     const version = info?.version ?? "N/A";
     const description = info?.description ?? "";
-    const directory = selectedPlugin?.directory ?? "";
 
     return html`
       <header
