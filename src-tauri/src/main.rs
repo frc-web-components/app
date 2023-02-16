@@ -188,6 +188,6 @@ async fn main() {
         })
         .invoke_handler(tauri::generate_handler![greet])
         .invoke_handler(tauri::generate_handler![save_file])
-        .run(tauri::generate_context!())
+        .run(context)
         .expect("error while running tauri application");
 }
