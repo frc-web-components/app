@@ -8,10 +8,8 @@ use std::fs;
 use std::fs::File;
 use std::io::Write;
 use tauri::api::dialog;
-use tauri::{
-    api::path,
-    CustomMenuItem, Manager, Menu, MenuItem, Submenu,
-};
+use tauri::{api::path, CustomMenuItem, Manager, Menu, MenuItem, Submenu};
+use tauri::{utils::config::AppUrl, window::WindowBuilder, WindowUrl};
 use tokio::runtime::Runtime;
 
 mod server;
@@ -67,6 +65,15 @@ struct FilePayload {
 
 #[tokio::main]
 async fn main() {
+    let port = portpicker::pick_unused_port().expect("failed to find unused port");
+
+    let mut context = tauri::generate_context!();
+    let url = format!("http://localhost:{}", port).parse().unwrap();
+    let window_url = WindowUrl::External(url);
+    // rewrite the config so the IPC is enabled on this URL
+    context.config_mut().build.dist_dir = AppUrl::Url(window_url.clone());
+    context.config_mut().build.dev_path = AppUrl::Url(window_url.clone());
+
     // here `"quit".to_string()` defines the menu item id, and the second parameter is the menu item label.
     let new_dashboard = CustomMenuItem::new("new_dashboard".to_string(), "New Dashboard");
     let new_window = CustomMenuItem::new("new_window".to_string(), "New Window");
@@ -107,9 +114,9 @@ async fn main() {
         start_server().await;
     });
 
-    let app = tauri::Builder::default();
-    // let newDashboardHandler = app.tauri::generate_handler![greet]
-    app.menu(menu)
+    tauri::Builder::default()
+        .plugin(tauri_plugin_localhost::Builder::new(port).build())
+        .menu(menu)
         .on_menu_event(|event| match event.menu_item_id() {
             "new_dashboard" => {
                 event.window().emit("newDashboard", {}).unwrap();
