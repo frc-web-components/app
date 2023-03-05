@@ -10,7 +10,7 @@
     "tauri": "tauri"
   },
   "dependencies": {
-    "@frc-web-components/fwc": "1.1.1",
+    "@frc-web-components/fwc": "1.2.0",
     "@vaadin/vaadin": "^22.0.0",
     "lit": "^2.0.0-rc.2"
   },
