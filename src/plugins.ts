@@ -69,13 +69,13 @@ export async function writePluginConfig(plugins: Plugin[]): Promise<void> {
 }
 
 export async function getAsset(path: string): Promise<Response> {
-  return fetch(`http://localhost:8125/assets/${path}`);
+  return fetch(`http://localhost:18127/assets/${path}`);
 }
 
 export async function loadPlugins(dashboard: FrcDashboard) {
   const plugins = await getPlugins();
   plugins.forEach((value, index) => {
-    import(`http://localhost:8125/plugins/${index}`)
+    import(`http://localhost:18127/plugins/${index}`)
       .then((pluginExports) => {
         console.log("pluginExports:", pluginExports, pluginExports?.default);
         try {
@@ -96,7 +96,7 @@ export async function loadPlugins(dashboard: FrcDashboard) {
   });
 }
 export async function getPluginInfo() {
-  const response = await fetch("http://localhost:8125/plugin-info");
+  const response = await fetch("http://localhost:18127/plugin-info");
   const pluginInfo: PluginInfo = await response.json();
   return pluginInfo;
 }

@@ -16,6 +16,10 @@ mod server;
 
 use crate::server::start_server;
 
+fn get_environment_variable(name: &str) -> String {
+    std::env::var(name).unwrap_or_else(|_| "".to_string())
+}
+
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
 fn greet(name: &str) -> String {
@@ -65,8 +69,8 @@ struct FilePayload {
 
 #[tokio::main]
 async fn main() {
-    let port = portpicker::pick_unused_port().expect("failed to find unused port");
-
+    // let port = portpicker::pick_unused_port().expect("failed to find unused port");
+    let port = 18126;
     let mut context = tauri::generate_context!();
     let url = format!("http://localhost:{}", port).parse().unwrap();
     let window_url = WindowUrl::External(url);
@@ -113,6 +117,13 @@ async fn main() {
     rt.spawn(async {
         start_server().await;
     });
+
+    let tauri_env = get_environment_variable("TAURI_ENV");
+    let context = if tauri_env == "dev" {
+        tauri::generate_context!()
+    } else {
+        context
+    };
 
     tauri::Builder::default()
         .plugin(tauri_plugin_localhost::Builder::new(port).build())

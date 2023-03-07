@@ -28,6 +28,7 @@ export class DashboardPluginsDialog extends LitElement {
           render(
             html`
               <dashboard-plugins-dialog-body
+                ?opened=${this.dialogOpened}
                 @closeDialog=${() => {
                   this.dialogOpened = false;
                 }}

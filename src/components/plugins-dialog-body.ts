@@ -1,6 +1,6 @@
 /* eslint-disable import/extensions */
 import { html, css, LitElement, TemplateResult } from "lit";
-import { customElement, state } from "lit/decorators.js";
+import { customElement, state, property } from "lit/decorators.js";
 import { open } from "@tauri-apps/api/dialog";
 import { desktopDir } from "@tauri-apps/api/path";
 import {
@@ -14,6 +14,7 @@ import { basename } from "@tauri-apps/api/path";
 
 @customElement("dashboard-plugins-dialog-body")
 export class PluginsDialogBody extends LitElement {
+  @property({ type: Boolean }) opened = false;
   @state() plugins: Plugin[] = [];
   @state() pluginInfo: PluginInfo = {};
   @state() selectedRowIndex = 0;
@@ -141,9 +142,19 @@ export class PluginsDialogBody extends LitElement {
     );
   }
 
-  async firstUpdated() {
+  async refreshPlugins() {
     this.plugins = await getPlugins();
     this.pluginInfo = await getPluginInfo();
+  }
+
+  firstUpdated() {
+    this.refreshPlugins();
+  }
+
+  updated(changedProps: Map<string, unknown>) {
+    if (changedProps.has("opened")) {
+      this.refreshPlugins();
+    }
   }
 
   private async onLoadPlugin() {
@@ -160,6 +171,7 @@ export class PluginsDialogBody extends LitElement {
       });
       await writePluginConfig(plugins);
       this.plugins = plugins;
+      this.pluginInfo = await getPluginInfo();
     }
   }
 
@@ -168,6 +180,7 @@ export class PluginsDialogBody extends LitElement {
     plugins.splice(index, 1);
     await writePluginConfig(plugins);
     this.plugins = plugins;
+    this.pluginInfo = await getPluginInfo();
   }
 
   render(): TemplateResult {
