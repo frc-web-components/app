@@ -11,7 +11,7 @@
     "tauri:dev": "cross-env TAURI_ENV=dev tauri dev"
   },
   "dependencies": {
-    "@frc-web-components/fwc": "1.2.0",
+    "@frc-web-components/fwc": "1.2.1",
     "@vaadin/vaadin": "^22.0.0",
     "lit": "^2.0.0-rc.2"
   },
