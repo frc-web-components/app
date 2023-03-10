@@ -1,4 +1,4 @@
-import { appWindow, WebviewWindow, getAll } from "@tauri-apps/api/window";
+import { appWindow, getAll } from "@tauri-apps/api/window";
 
 interface WindowInfo {
   dashboardPath: string | null;
