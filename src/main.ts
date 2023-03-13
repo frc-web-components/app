@@ -3,7 +3,11 @@ import { appWindow } from "@tauri-apps/api/window";
 import { invoke, dialog } from "@tauri-apps/api";
 import "./components/plugins-dialog";
 import { writePluginConfig, getPlugins, loadPlugins } from "./plugins";
-import {  removeCurrent, updateCurrent, getPreviousOpenDashboards } from './window-helper';
+import {
+  removeCurrent,
+  updateCurrent,
+  loadPreviousLayout,
+} from "./window-helper";
 
 interface FilePayload {
   path: string;
@@ -15,31 +19,33 @@ function setTitle(path?: string) {
   if (!path) {
     appWindow.setTitle("Untitled Dashboard - FRC Web Components");
   } else {
-    const startIndex = Math.max(
-      path.lastIndexOf("\\"),
-      path.lastIndexOf("/")
-    );
+    const startIndex = Math.max(path.lastIndexOf("\\"), path.lastIndexOf("/"));
     const filename = startIndex > -1 ? path.substring(startIndex + 1) : path;
     appWindow.setTitle(`${filename} - FRC Web Components`);
   }
 }
 
 window.addEventListener("DOMContentLoaded", async () => {
-
-  if (appWindow.label === 'main') {
-    const prevOpenDashboards = getPreviousOpenDashboards();
-    console.log('prevOpenDashboards', prevOpenDashboards);
+  let currentDashboardPath: string = "";
+  
+  if (appWindow.label === "main") {
+    // loadPreviousLayout();
   }
 
   appWindow.onCloseRequested(() => {
-    // alert('close');
     removeCurrent();
+  });
+
+  appWindow.onMoved(() => {
+    updateCurrent(currentDashboardPath);
+  });
+
+  appWindow.onResized(() => {
+    updateCurrent(currentDashboardPath);
   });
 
   (window as any).writePluginConfig = writePluginConfig;
   (window as any).getPlugins = getPlugins;
-
-  let currentDashboardPath: string = "";
 
   setTitle();
 

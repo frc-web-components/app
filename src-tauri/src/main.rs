@@ -4,6 +4,7 @@
 )]
 
 use chrono;
+use tauri::{Size, PhysicalSize, Position, PhysicalPosition};
 use std::fs;
 use std::fs::File;
 use std::io::Write;
@@ -15,6 +16,27 @@ use tokio::runtime::Runtime;
 mod server;
 
 use crate::server::start_server;
+
+#[tauri::command]
+async fn create_window(app: tauri::AppHandle, width: u32, height: u32, x: i32, y: i32) {
+    //   let window = tauri::WindowBuilder::new(&app, "label", tauri::WindowUrl::External("https://tauri.app/".parse().unwrap()))
+    //     .build()
+    //     .unwrap();
+
+    let label = [
+        "window".to_string(),
+        chrono::offset::Local::now().timestamp_micros().to_string(),
+    ]
+    .join("");
+    let window = tauri::WindowBuilder::new(&app, label, tauri::WindowUrl::App("index.html".into()))
+        .build()
+        .expect("failed to build window");
+
+    window.set_title("FRC Web Components").ok();
+    window.set_size(Size::Physical(PhysicalSize { width, height })).ok();
+    window.set_position(Position::Physical(PhysicalPosition { x, y })).ok();
+
+}
 
 fn get_environment_variable(name: &str) -> String {
     std::env::var(name).unwrap_or_else(|_| "".to_string())
@@ -199,6 +221,7 @@ async fn main() {
         })
         .invoke_handler(tauri::generate_handler![greet])
         .invoke_handler(tauri::generate_handler![save_file])
+        .invoke_handler(tauri::generate_handler![create_window])
         .run(context)
         .expect("error while running tauri application");
 }

@@ -1,4 +1,12 @@
-import { appWindow, getAll } from "@tauri-apps/api/window";
+import {
+  appWindow,
+  getAll,
+  LogicalPosition,
+  LogicalSize,
+  PhysicalPosition,
+  PhysicalSize,
+} from "@tauri-apps/api/window";
+import { invoke } from "@tauri-apps/api";
 
 interface WindowInfo {
   dashboardPath: string | null;
@@ -6,7 +14,11 @@ interface WindowInfo {
   position: [number, number];
 }
 
-export function getPreviousOpenDashboards(): Record<string, WindowInfo> {
+function storeDashboards(dashboards: Record<string, WindowInfo>) {
+  localStorage.setItem("windowDashboards", JSON.stringify(dashboards));
+}
+
+export function loadDashboards(): Record<string, WindowInfo> {
   try {
     return JSON.parse(localStorage.getItem("windowDashboards") ?? "{}");
   } catch (e) {
@@ -15,13 +27,13 @@ export function getPreviousOpenDashboards(): Record<string, WindowInfo> {
 }
 
 export function getOpenDashboards(): Record<string, WindowInfo> {
-  let openDashboards: Record<string, WindowInfo> = {};
-  try {
-    openDashboards = JSON.parse(
-      localStorage.getItem("windowDashboards") ?? "{}"
-    );
-  } catch (e) {}
+  let openDashboards = loadDashboards();
   const windows = getAll();
+  console.log(
+    "windows:",
+    windows.map((window) => window.label)
+  );
+
   const filteredOpenDashboards: Record<string, WindowInfo> = {};
   windows.forEach((window) => {
     filteredOpenDashboards[window.label] = openDashboards[window.label];
@@ -30,15 +42,29 @@ export function getOpenDashboards(): Record<string, WindowInfo> {
 }
 
 export function setOpenDashboard(label: string, info: WindowInfo) {
+  console.log("setOpenDashboard:", label, info);
   const openDashboards = getOpenDashboards();
   openDashboards[label] = info;
-  localStorage.setItem("windowDashboards", JSON.stringify(openDashboards));
+  storeDashboards(openDashboards);
 }
 
 export function removeWindow(label: string) {
   const openDashboards = getOpenDashboards();
   delete openDashboards[label];
-  localStorage.setItem("windowDashboards", JSON.stringify(openDashboards));
+  storeDashboards(openDashboards);
+}
+
+export function storePosition(x: number, y: number) {
+  const openDashboards = getOpenDashboards();
+  console.log("appwindow:", appWindow.label, x, y);
+  openDashboards[appWindow.label].position = [x, y];
+  storeDashboards(openDashboards);
+}
+
+export function storeSize(width: number, height: number) {
+  const openDashboards = getOpenDashboards();
+  openDashboards[appWindow.label].size = [width, height];
+  storeDashboards(openDashboards);
 }
 
 export function removeCurrent() {
@@ -47,10 +73,31 @@ export function removeCurrent() {
 
 export async function updateCurrent(path: string | null) {
   const position = await appWindow.outerPosition();
-  const size = await appWindow.outerSize();
+  const size = await appWindow.innerSize();
   setOpenDashboard(appWindow.label, {
     dashboardPath: path,
     position: [position.x, position.y],
     size: [size.width, size.height],
   });
+}
+
+export async function loadPreviousLayout() {
+  if (appWindow.label === "main") {
+    const prevOpenDashboards = loadDashboards();
+    for (const [label, info] of Object.entries(prevOpenDashboards)) {
+      const [width, height] = info.size;
+      const [x, y] = info.position;
+      if (label === "main") {
+        await appWindow.setSize(new PhysicalSize(width, height));
+          await appWindow.setPosition(new PhysicalPosition(x, y));
+      } else {
+        invoke("create_window", {
+          width,
+          height,
+          x,
+          y,
+        });
+      }
+    }
+  }
 }
