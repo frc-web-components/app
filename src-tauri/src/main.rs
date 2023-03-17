@@ -4,13 +4,13 @@
 )]
 
 use chrono;
-use tauri::{Size, PhysicalSize, Position, PhysicalPosition};
 use std::fs;
 use std::fs::File;
 use std::io::Write;
 use tauri::api::dialog;
 use tauri::{api::path, CustomMenuItem, Manager, Menu, MenuItem, Submenu};
 use tauri::{utils::config::AppUrl, window::WindowBuilder, WindowUrl};
+use tauri::{PhysicalPosition, PhysicalSize, Position, Size};
 use tokio::runtime::Runtime;
 
 mod server;
@@ -18,34 +18,61 @@ mod server;
 use crate::server::start_server;
 
 #[tauri::command]
-async fn create_window(app: tauri::AppHandle, width: u32, height: u32, x: i32, y: i32) {
-    //   let window = tauri::WindowBuilder::new(&app, "label", tauri::WindowUrl::External("https://tauri.app/".parse().unwrap()))
-    //     .build()
-    //     .unwrap();
-
+async fn create_window(
+    app: tauri::AppHandle,
+    width: u32,
+    height: u32,
+    x: i32,
+    y: i32,
+    path: Option<String>,
+) {
     let label = [
         "window".to_string(),
         chrono::offset::Local::now().timestamp_micros().to_string(),
     ]
     .join("");
-    let window = tauri::WindowBuilder::new(&app, label, tauri::WindowUrl::App("index.html".into()))
+    let mut url = "index.html".to_owned();
+    let mut query_str: String = String::from("");
+    if let Some(path_str) = path.clone() {
+        query_str = format!("?dashboardPath={}", path_str.as_str());
+    }
+    url.push_str(query_str.as_str());
+
+    let window = tauri::WindowBuilder::new(&app, label, tauri::WindowUrl::App(url.into()))
         .build()
         .expect("failed to build window");
 
     window.set_title("FRC Web Components").ok();
-    window.set_size(Size::Physical(PhysicalSize { width, height })).ok();
-    window.set_position(Position::Physical(PhysicalPosition { x, y })).ok();
+    window
+        .set_size(Size::Physical(PhysicalSize { width, height }))
+        .ok();
+    window
+        .set_position(Position::Physical(PhysicalPosition { x, y }))
+        .ok();
+}
 
+#[tauri::command]
+async fn get_file_contents(path: Option<String>) -> Option<String> {
+    if let Some(path_str) = path {
+        if let Ok(contents) = fs::read_to_string(path_str.clone()) {
+            return Some(contents);
+        }
+    }
+    return None;
+}
+
+#[tauri::command]
+fn get_window_labels(app: tauri::AppHandle) -> Vec<String> {
+    let labels: Vec<String> = app
+        .windows()
+        .values()
+        .map(|window| String::from(window.label()))
+        .collect();
+    labels
 }
 
 fn get_environment_variable(name: &str) -> String {
     std::env::var(name).unwrap_or_else(|_| "".to_string())
-}
-
-// Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-#[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
@@ -71,16 +98,6 @@ fn save_file(path: &str, content: &str) {
             });
     }
 }
-
-// #[tauri::command]
-// fn load_plugin() {
-//     dialog::FileDialogBuilder::default().pick_folder(|path_buf| match path_buf {
-//         Some(p) => {
-//             let folder_path = p.into_os_string().into_string().unwrap();
-//         }
-//         _ => {}
-//     });
-// }
 
 // the payload type must implement `Serialize` and `Clone`.
 #[derive(Clone, serde::Serialize)]
@@ -219,9 +236,12 @@ async fn main() {
             }
             _ => {}
         })
-        .invoke_handler(tauri::generate_handler![greet])
-        .invoke_handler(tauri::generate_handler![save_file])
-        .invoke_handler(tauri::generate_handler![create_window])
+        .invoke_handler(tauri::generate_handler![
+            save_file,
+            create_window,
+            get_window_labels,
+            get_file_contents,
+        ])
         .run(context)
         .expect("error while running tauri application");
 }

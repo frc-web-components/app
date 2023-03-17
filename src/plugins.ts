@@ -77,7 +77,6 @@ export async function loadPlugins(dashboard: FrcDashboard) {
   plugins.forEach((value, index) => {
     import(`http://localhost:18127/plugins/${index}`)
       .then((pluginExports) => {
-        console.log("pluginExports:", pluginExports, pluginExports?.default);
         try {
           pluginExports?.default?.(dashboard);
         } catch (error) {

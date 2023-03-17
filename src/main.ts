@@ -18,18 +18,47 @@ function setTitle(path?: string) {
   updateCurrent(path ?? null);
   if (!path) {
     appWindow.setTitle("Untitled Dashboard - FRC Web Components");
+    window.location.hash = "";
   } else {
     const startIndex = Math.max(path.lastIndexOf("\\"), path.lastIndexOf("/"));
     const filename = startIndex > -1 ? path.substring(startIndex + 1) : path;
     appWindow.setTitle(`${filename} - FRC Web Components`);
+    window.location.hash = `dashboardPath=${path}`;
   }
+}
+
+function getInitialDashboardPath(): string | null {
+  const url = new URL(document.location as any);
+  const params = url.searchParams;
+  const hash = new URLSearchParams(url.hash.substring(1));
+  return hash.get('dashboardPath') ?? params.get("dashboardPath");
 }
 
 window.addEventListener("DOMContentLoaded", async () => {
   let currentDashboardPath: string = "";
-  
+  const initialDashboardPath = getInitialDashboardPath();
+
   if (appWindow.label === "main") {
-    // loadPreviousLayout();
+    loadPreviousLayout().then((windowInfo) => {
+      const path = windowInfo?.dashboardPath;
+      if (path) {
+        invoke("get_file_contents", {
+          path,
+        }).then((contents) => {
+          if (contents) {
+            currentDashboardPath = path;
+            dashboard.setHtml(contents as string);
+            setTitle(path);
+          } else {
+            updateCurrent(path);
+          }
+        });
+      } else {
+        updateCurrent(currentDashboardPath);
+      }
+    });
+  } else {
+    updateCurrent(currentDashboardPath);
   }
 
   appWindow.onCloseRequested(() => {
@@ -52,6 +81,18 @@ window.addEventListener("DOMContentLoaded", async () => {
   const dashboard = createDashboard(document.body);
   (window as any).dashboard = dashboard;
   loadPlugins(dashboard);
+
+  if (initialDashboardPath) {
+    invoke("get_file_contents", {
+      path: initialDashboardPath,
+    }).then((contents) => {
+      if (contents) {
+        currentDashboardPath = initialDashboardPath;
+        dashboard.setHtml(contents as string);
+        setTitle(initialDashboardPath);
+      }
+    });
+  }
 
   appWindow.listen("newDashboard", () => {
     currentDashboardPath = "";
