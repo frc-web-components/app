@@ -1,4 +1,5 @@
-import createDashboard from "@frc-web-components/fwc";
+import "./dashboard";
+import { getDashboard } from "@frc-web-components/app";
 import { appWindow } from "@tauri-apps/api/window";
 import { invoke, dialog } from "@tauri-apps/api";
 import "./components/plugins-dialog";
@@ -31,7 +32,7 @@ function getInitialDashboardPath(): string | null {
   const url = new URL(document.location as any);
   const params = url.searchParams;
   const hash = new URLSearchParams(url.hash.substring(1));
-  return hash.get('dashboardPath') ?? params.get("dashboardPath");
+  return hash.get("dashboardPath") ?? params.get("dashboardPath");
 }
 
 window.addEventListener("DOMContentLoaded", async () => {
@@ -78,9 +79,8 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   setTitle();
 
-  const dashboard = createDashboard(document.body);
-  (window as any).dashboard = dashboard;
-  loadPlugins(dashboard);
+  const dashboard = getDashboard();
+  loadPlugins();
 
   if (initialDashboardPath) {
     invoke("get_file_contents", {

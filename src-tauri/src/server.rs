@@ -48,6 +48,7 @@ fn get_content_type(file_path: &str) -> &'static str {
         "png" => "image/png",
         "jpg" => "image/jpg",
         "wav" => "audio/wav",
+        "svg" => "image/svg+xml",
         _ => "text/html",
     }
 }

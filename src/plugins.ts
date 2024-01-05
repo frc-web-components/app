@@ -72,20 +72,10 @@ export async function getAsset(path: string): Promise<Response> {
   return fetch(`http://localhost:18127/assets/${path}`);
 }
 
-export async function loadPlugins(dashboard: FrcDashboard) {
+export async function loadPlugins() {
   const plugins = await getPlugins();
   plugins.forEach((value, index) => {
-    import(`http://localhost:18127/plugins/${index}`)
-      .then((pluginExports) => {
-        try {
-          pluginExports?.default?.(dashboard);
-        } catch (error) {
-          console.error(
-            `Error executing plugin with path "${value.directory}":`,
-            error
-          );
-        }
-      })
+    import( /* @vite-ignore */ `http://localhost:18127/plugins/${index}`)
       .catch((error) => {
         console.error(
           `Failed to load plugin with path "${value.directory}":`,
