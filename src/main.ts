@@ -80,7 +80,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   setTitle();
 
   const dashboard = getDashboard();
-  loadPlugins();
+  await loadPlugins();
 
   if (initialDashboardPath) {
     invoke("get_file_contents", {
