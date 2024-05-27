@@ -1,5 +1,5 @@
 import "./dashboard";
-import { getDashboard } from "@frc-web-components/app";
+import { getDashboard } from "@frc-web-components/react-dashboard";
 import { appWindow } from "@tauri-apps/api/window";
 import { invoke, dialog } from "@tauri-apps/api";
 import "./components/plugins-dialog";
@@ -48,7 +48,7 @@ window.addEventListener("DOMContentLoaded", async () => {
         }).then((contents) => {
           if (contents) {
             currentDashboardPath = path;
-            dashboard.setHtml(contents as string);
+            dashboard.setLayout(JSON.parse(contents as string));
             setTitle(path);
           } else {
             updateCurrent(path);
@@ -88,7 +88,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     }).then((contents) => {
       if (contents) {
         currentDashboardPath = initialDashboardPath;
-        dashboard.setHtml(contents as string);
+        dashboard.setLayout(JSON.parse(contents as string));
         setTitle(initialDashboardPath);
       }
     });
@@ -96,28 +96,28 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   appWindow.listen("newDashboard", () => {
     currentDashboardPath = "";
-    dashboard.resetHtml();
+    dashboard.resetLayout();
     setTitle();
   });
 
   appWindow.listen("openDashboard", (event) => {
     const { contents, path } = event.payload as FilePayload;
     currentDashboardPath = path;
-    dashboard.setHtml(contents);
+    dashboard.setLayout(JSON.parse(contents as string));
     setTitle(currentDashboardPath);
   });
 
   appWindow.listen("saveDashboardAs", (event) => {
     const path = event.payload as string;
     currentDashboardPath = path;
-    invoke("save_file", { path, content: dashboard.getHtml() });
+    invoke("save_file", { path, content: JSON.stringify(dashboard.getLayout(), null, 4) });
     setTitle(currentDashboardPath);
   });
 
   appWindow.listen("saveDashboard", async () => {
     if (!currentDashboardPath) {
       const path = await dialog.save({
-        filters: [{ name: "HTML", extensions: ["html"] }],
+        filters: [{ name: "JSON", extensions: ["json"] }],
       });
       if (!path) {
         return;
@@ -127,7 +127,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     }
     invoke("save_file", {
       path: currentDashboardPath,
-      content: dashboard.getHtml(),
+      content: JSON.stringify(dashboard.getLayout()),
     });
   });
 });

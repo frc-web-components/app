@@ -11,18 +11,19 @@ rust-version = "1.64"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-tauri-build = { version = "1.1", features = [] }
+tauri-build = { version = "1.5", features = [] }
 
 [dependencies]
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
-tauri = { version = "1.1", features = ["devtools", "dialog-ask", "dialog-confirm", "dialog-message", "dialog-open", "dialog-save", "fs-create-dir", "fs-exists", "fs-read-dir", "fs-read-file", "fs-remove-dir", "fs-remove-file", "fs-rename-file", "fs-write-file", "path-all", "shell-sidecar", "window-center", "window-close", "window-create", "window-hide", "window-maximize", "window-minimize", "window-print", "window-request-user-attention", "window-set-always-on-top", "window-set-cursor-grab", "window-set-cursor-icon", "window-set-cursor-position", "window-set-cursor-visible", "window-set-decorations", "window-set-focus", "window-set-fullscreen", "window-set-icon", "window-set-max-size", "window-set-min-size", "window-set-position", "window-set-resizable", "window-set-size", "window-set-skip-taskbar", "window-set-title", "window-show", "window-start-dragging", "window-unmaximize", "window-unminimize"] }
+tauri = { version = "1.6", features = ["devtools", "dialog-ask", "dialog-confirm", "dialog-message", "dialog-open", "dialog-save", "fs-create-dir", "fs-exists", "fs-read-dir", "fs-read-file", "fs-remove-dir", "fs-remove-file", "fs-rename-file", "fs-write-file", "path-all", "shell-sidecar", "window-center", "window-close", "window-create", "window-hide", "window-maximize", "window-minimize", "window-print", "window-request-user-attention", "window-set-always-on-top", "window-set-cursor-grab", "window-set-cursor-icon", "window-set-cursor-position", "window-set-cursor-visible", "window-set-decorations", "window-set-focus", "window-set-fullscreen", "window-set-icon", "window-set-max-size", "window-set-min-size", "window-set-position", "window-set-resizable", "window-set-size", "window-set-skip-taskbar", "window-set-title", "window-show", "window-start-dragging", "window-unmaximize", "window-unminimize"] }
 chrono = "0.4"
-notify = { version = "5.0.0", features = ["serde"] }
+notify = { version = "5.2.0", features = ["serde"] }
 hyper = { version = "0.14", features = ["full"] }
 tokio = { version = "1", features = ["full"] }
 tauri-plugin-localhost = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "dev" }
 portpicker = "0.1" # used in the example to pick a random free port
+window-shadows = "0.2.2"
 
 [features]
 # by default Tauri runs in production mode

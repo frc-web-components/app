@@ -1,25 +1,32 @@
-import {
-  addElements,
-  addSourceProvider,
-  addThemeRules,
-  mountDashboard,
-  setDefaultSourceProvider,
-  setAssetBasePath,
-} from "@frc-web-components/app";
-import { Nt4Provider, GamepadProvider } from "@frc-web-components/fwc/source-providers";
-import { darkTheme } from "@frc-web-components/fwc/themes";
-import { dashboardElementConfigs } from "@frc-web-components/fwc";
+// import {
+//   addElements,
+//   addSourceProvider,
+//   addThemeRules,
+//   mountDashboard,
+//   setDefaultSourceProvider,
+//   setAssetBasePath,
+// } from "@frc-web-components/app";
+// import { Nt4Provider, GamepadProvider } from "@frc-web-components/fwc/source-providers";
+// import { darkTheme } from "@frc-web-components/fwc/themes";
+// import { dashboardElementConfigs } from "@frc-web-components/fwc";
 
-setAssetBasePath("http://localhost:18127/assets");
-addThemeRules("dark", darkTheme);
-addSourceProvider("NetworkTables", new Nt4Provider());
-addSourceProvider("Gamepad", new GamepadProvider());
-setDefaultSourceProvider("NetworkTables");
-addElements(dashboardElementConfigs, "FRC");
-mountDashboard(document.body);
+// setAssetBasePath("http://localhost:18127/assets");
+// addThemeRules("dark", darkTheme);
+// addSourceProvider("NetworkTables", new Nt4Provider());
+// addSourceProvider("Gamepad", new GamepadProvider());
+// setDefaultSourceProvider("NetworkTables");
+// addElements(dashboardElementConfigs, "FRC");
+// mountDashboard(document.body);
 
-import * as fwcApp from "@frc-web-components/app";
-(window as any).fwcApp = fwcApp;
+// import * as fwcApp from "@frc-web-components/app";
+// (window as any).fwcApp = fwcApp;
 
-import * as lit from "lit";
-(window as any).lit = lit;
+// import * as lit from "lit";
+// (window as any).lit = lit;
+
+import * as fwcDashboard from "@frc-web-components/react-dashboard";
+import "@frc-web-components/react-dashboard/dist/style.css";
+
+fwcDashboard.setAssetBasePath("http://localhost:18127/assets");
+fwcDashboard.mountDashboard(document.getElementById("root")!);
+(window as any).fwcDashboard = fwcDashboard;

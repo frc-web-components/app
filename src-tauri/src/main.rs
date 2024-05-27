@@ -17,6 +17,8 @@ mod server;
 
 use crate::server::start_server;
 
+use window_shadows::set_shadow;
+
 #[tauri::command]
 async fn create_window(
     app: tauri::AppHandle,
@@ -49,6 +51,9 @@ async fn create_window(
     window
         .set_position(Position::Physical(PhysicalPosition { x, y }))
         .ok();
+
+    // #[cfg(any(windows, target_os = "macos"))]
+    set_shadow(&window, true).unwrap();
 }
 
 #[tauri::command]
@@ -85,7 +90,7 @@ fn save_file(path: &str, content: &str) {
     } else {
         let content_copy: String = content.into();
         dialog::FileDialogBuilder::default()
-            .add_filter("HTML", &["html"])
+            .add_filter("JSON", &["json"])
             .save_file(move |path_buf| match path_buf {
                 Some(p) => {
                     let file_path = p.into_os_string().into_string().unwrap();
@@ -166,6 +171,11 @@ async fn main() {
 
     tauri::Builder::default()
         .plugin(tauri_plugin_localhost::Builder::new(port).build())
+        .setup(|app| {
+            let window = app.get_window("main").unwrap();
+            set_shadow(&window, true).expect("Unsupported platform!");
+            Ok(())
+        })
         .menu(menu)
         .on_menu_event(|event| match event.menu_item_id() {
             "new_dashboard" => {
@@ -189,7 +199,7 @@ async fn main() {
             }
             "open_dashboard" => {
                 dialog::FileDialogBuilder::default()
-                    .add_filter("HTML", &["html"])
+                    .add_filter("JSON", &["json"])
                     .pick_file(move |path_buf| match path_buf {
                         Some(p) => {
                             // let mut data = String::new();
@@ -212,7 +222,7 @@ async fn main() {
             }
             "save_dashboard_as" => {
                 dialog::FileDialogBuilder::default()
-                    .add_filter("HTML", &["html"])
+                    .add_filter("JSON", &["json"])
                     .save_file(move |path_buf| match path_buf {
                         Some(p) => {
                             let file_path = p.into_os_string().into_string().unwrap();
