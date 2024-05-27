@@ -72,6 +72,10 @@
             "sidecar": true
           }
         ]
+      },
+      "process": {
+        "all": false,
+        "exit": true
       }
     },
     "bundle": {

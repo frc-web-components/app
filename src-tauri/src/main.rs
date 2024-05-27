@@ -57,6 +57,22 @@ async fn create_window(
 }
 
 #[tauri::command]
+async fn create_new_window(app: tauri::AppHandle) {
+    let label = [
+        "window".to_string(),
+        chrono::offset::Local::now().timestamp_micros().to_string(),
+    ]
+    .join("");
+    let window = tauri::WindowBuilder::new(&app, label, tauri::WindowUrl::App("index.html".into()))
+        .build()
+        .expect("failed to build window");
+
+    window.set_decorations(false).ok();
+    window.set_title("FRC Web Components").ok();
+    set_shadow(&window, true).expect("Unsupported platform!");
+}
+
+#[tauri::command]
 async fn get_file_contents(path: Option<String>) -> Option<String> {
     if let Some(path_str) = path {
         if let Ok(contents) = fs::read_to_string(path_str.clone()) {
@@ -249,6 +265,7 @@ async fn main() {
         .invoke_handler(tauri::generate_handler![
             save_file,
             create_window,
+            create_new_window,
             get_window_labels,
             get_file_contents,
         ])
