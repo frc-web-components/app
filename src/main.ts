@@ -5,7 +5,6 @@ import { readTextFile } from "@tauri-apps/api/fs";
 import { exit } from "@tauri-apps/api/process";
 import { invoke, dialog } from "@tauri-apps/api";
 import { desktopDir, basename } from "@tauri-apps/api/path";
-import "./components/plugins-dialog";
 import {
   writePluginConfig,
   getPlugins,
