@@ -11,7 +11,7 @@
     "tauri:dev": "cross-env TAURI_ENV=dev tauri dev"
   },
   "dependencies": {
-    "@frc-web-components/react-dashboard": "^0.1.9",
+    "@frc-web-components/react-dashboard": "^0.1.10",
     "@mui/material": "^5.15.17",
     "@vaadin/vaadin": "^22.0.0",
     "lit": "^2.7.6",
