@@ -1,5 +1,5 @@
 import "./dashboard";
-import { getDashboard } from "@frc-web-components/react-dashboard";
+import { getDashboard } from "@frc-web-components/app";
 import { PhysicalSize, appWindow } from "@tauri-apps/api/window";
 import { readTextFile } from "@tauri-apps/api/fs";
 import { exit } from "@tauri-apps/api/process";
@@ -17,15 +17,21 @@ import {
   loadPreviousLayout,
 } from "./window-helper";
 
+const dashboard = getDashboard();
+
+
 function setTitle(path?: string) {
   updateCurrent(path ?? null);
   if (!path) {
     appWindow.setTitle("Untitled Dashboard - FRC Web Components");
+    dashboard.setTitle("Untitled Dashboard");
     window.location.hash = "";
   } else {
     const startIndex = Math.max(path.lastIndexOf("\\"), path.lastIndexOf("/"));
     const filename = startIndex > -1 ? path.substring(startIndex + 1) : path;
     appWindow.setTitle(`${filename} - FRC Web Components`);
+    dashboard.setTitle(filename);
+
     window.location.hash = `dashboardPath=${path}`;
   }
 }
@@ -81,7 +87,6 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   setTitle();
 
-  const dashboard = getDashboard();
   await loadPlugins();
 
   if (initialDashboardPath) {

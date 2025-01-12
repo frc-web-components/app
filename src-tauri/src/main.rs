@@ -53,7 +53,9 @@ async fn create_window(
         .ok();
 
     // #[cfg(any(windows, target_os = "macos"))]
+    window.set_decorations(false).ok();
     set_shadow(&window, true).unwrap();
+    
 }
 
 #[tauri::command]
