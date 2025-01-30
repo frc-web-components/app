@@ -137,6 +137,8 @@ async fn main() {
     let url = format!("http://localhost:{}", port).parse().unwrap();
     let window_url = WindowUrl::External(url);
     // rewrite the config so the IPC is enabled on this URL
+    let old_dist_dir = context.config_mut().build.dist_dir.clone();
+    let old_dev_path = context.config_mut().build.dev_path.clone();
     context.config_mut().build.dist_dir = AppUrl::Url(window_url.clone());
     context.config_mut().build.dev_path = AppUrl::Url(window_url.clone());
 
@@ -180,12 +182,11 @@ async fn main() {
         start_server().await;
     });
 
-    let tauri_env = get_environment_variable("TAURI_ENV");
-    let context = if tauri_env == "dev" {
-        tauri::generate_context!()
-    } else {
-        context
-    };
+    // Modify the context based on the environment variable if needed
+    if get_environment_variable("TAURI_ENV") == "dev" {
+        context.config_mut().build.dist_dir = old_dist_dir;
+        context.config_mut().build.dev_path = old_dev_path;
+    }
 
     tauri::Builder::default()
         .plugin(tauri_plugin_localhost::Builder::new(port).build())
