@@ -16,6 +16,7 @@ import {
   updateCurrent,
   loadPreviousLayout,
 } from "./window-helper";
+import { exportAsHtml } from "./export-as-html";
 
 const dashboard = getDashboard();
 
@@ -155,6 +156,20 @@ window.addEventListener("DOMContentLoaded", async () => {
     invoke("save_file", {
       path: currentDashboardPath,
       content: JSON.stringify(dashboard.getLayout()),
+    });
+  });
+  
+  dashboard.on('exportForWebClickEvent', async () => {
+    const html = exportAsHtml();
+    const path = await dialog.save({
+      filters: [{ name: "HTML", extensions: ["html"] }],
+    });
+    if (!path) {
+      return;
+    }
+    invoke("save_file", {
+      path,
+      content: html,
     });
   });
 
